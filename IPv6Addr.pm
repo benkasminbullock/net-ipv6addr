@@ -45,7 +45,7 @@ The public interface of this module is rather small.
 @EXPORT = qw();
 @EXPORT_OK = qw();
 
-$VERSION = '0.2';
+$VERSION = '0.3';
 
 # We get these formats from rfc1884:
 #
