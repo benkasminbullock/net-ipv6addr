@@ -428,7 +428,7 @@ an IPv6 address string in any format.
 
 =head2 Returns
 
-The IPv6 address in "compresed" format (as detailed by RFC1884).
+The IPv6 address in "compressed" format (as detailed by RFC1884).
 
 =head2 Notes
 
@@ -746,7 +746,9 @@ sub in_network_of_size
 	$parts[$j] = 0;
       }
     }
-    return Net::IPv6Addr->new(join(':', @parts));
+    # https://rt.cpan.org/Ticket/Display.html?id=79325
+    return Net::IPv6Addr->new(sprintf("%04x" x 8, @parts));
+    #    return Net::IPv6Addr->new(join(':', @parts));
 }
 
 =pod
@@ -813,7 +815,7 @@ probably exist in this module.  Please report them.
 
 =head1 AUTHOR
 
-Tony Monroe E<lt>tmonroe plus perl at nog dot netE<gt>.
+Tony Monroe
 
 The module's interface probably looks like it vaguely resembles
 Net::IPv4Addr by Francis J. Lacoste E<lt>francis dot lacoste at
