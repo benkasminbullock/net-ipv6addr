@@ -18,6 +18,6 @@ eval <<'EOF';
 EOF
 ok (! $@);
 if ($@) {
-diag ($@);
+    diag ($@);
 }
 done_testing ();
