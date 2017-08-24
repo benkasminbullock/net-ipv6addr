@@ -9,7 +9,13 @@ my $ok = GetOptions (
     dist => \my $dist,
     all => \my $all,
     clean => \my $clean,
+    pan => \my $pan,
 );
+if ($pan) {
+    clean ();
+    $dist = 1;
+}
+
 if ($clean) {
     clean ();
 }
@@ -21,6 +27,12 @@ else {
     system ("perl Makefile.PL;make;make test") == 0 or die;
     if ($dist) {
 	system ("make manifest;make dist") == 0 or die;
+    }
+}
+if ($pan) {
+    if (system ("prove xt/*.t")) {
+	clean ();
+	die "Author tests failed";
     }
 }
 exit;
