@@ -2,7 +2,11 @@ package Net::IPv6Addr;
 
 use strict;
 use warnings;
-use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
+
+our @ISA = qw(Exporter);
+our @EXPORT = qw();
+our @EXPORT_OK = qw();
+our $VERSION = '0.6';
 
 use Carp;
 use Net::IPv4Addr;
@@ -39,13 +43,6 @@ addresses formatted in the style referenced by RFC1924.
 The public interface of this module is rather small.
 
 =cut
-
-@ISA = qw(Exporter);
-
-@EXPORT = qw();
-@EXPORT_OK = qw();
-
-$VERSION = '0.5';
 
 # We get these formats from rfc1884:
 #
