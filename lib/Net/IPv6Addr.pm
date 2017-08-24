@@ -849,13 +849,22 @@ L<Search grep.cpan.me for uses of this module|http://grep.cpan.me/?q=Net%3A%3AIP
 
 =head2 RFCs
 
-RFC1884, RFC1886, RFC1924
+L<RFC1884|https://www.ietf.org/rfc/rfc1884.txt>,
+L<RFC1886|https://www.ietf.org/rfc/rfc1886.txt>,
+L<RFC1924|https://www.ietf.org/rfc/rfc1924.txt>,
+L<RFC2373|https://www.ietf.org/rfc/rfc2373.txt>
 
 =head2 Other CPAN modules
 
 =over
 
 =item L<Net::IPv6Address>
+
+=item L<IPv6::Address>
+
+=item L<Regexp::IPv6>
+
+=item L<IPTables::IPv6>
 
 =back
 
