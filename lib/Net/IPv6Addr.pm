@@ -6,7 +6,6 @@ use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 
 use Carp;
 use Net::IPv4Addr;
-
 use Math::BigInt;
 use Math::Base85;
 
@@ -205,6 +204,7 @@ An IPv6 address string.  Optionally, a numeric prefix length.
 
 What you gave it, more or less, if it does parse out correctly,
 otherwise returns undef.
+
 =head2 Notes
 
 This is not an object method or class method; it is just a subroutine.
@@ -762,7 +762,7 @@ Network size may be given with / notation.
 
 =head2 Returns
 
-Something true, if address is member of the network, false otherwise.
+A true value if address is a member of the network, false otherwise.
 
 =head2 Notes
 
@@ -815,7 +815,7 @@ probably exist in this module.  Please report them.
 Tony Monroe
 
 The module's interface probably looks like it vaguely resembles
-Net::IPv4Addr by Francis J. Lacoste E<lt>francis dot lacoste at
+L<Net::IPv4Addr> by Francis J. Lacoste E<lt>francis dot lacoste at
 iNsu dot COME<gt>.
 
 Some fixes and subroutines from Jyrki Soini E<lt>jyrki dot soini
