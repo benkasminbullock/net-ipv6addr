@@ -6,25 +6,21 @@ use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 use Carp;
 use Net::IPv4Addr;
 
-BEGIN {
-    eval { 
-	require Math::BigInt;
-	require Math::Base85;
-    };
-}
+use Math::BigInt;
+use Math::Base85;
 
 =pod
 
 =head1 NAME
 
-Net::IPv6Addr -- check validity of IPv6 addresses
+Net::IPv6Addr - Check validity of IPv6 addresses
 
 =head1 SYNOPSIS
 
     use Net::IPv6Addr;
 
     Net::IPv6Addr::ipv6_parse($addr);
-    $x = new Net::IPv6Addr("dead:beef:cafe:babe::f0ad");
+    $x = Net::IPv6Addr->new("dead:beef:cafe:babe::f0ad");
     print $x->to_string_preferred(), "\n";
 
 =head1 DESCRIPTION
