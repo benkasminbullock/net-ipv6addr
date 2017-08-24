@@ -1,13 +1,16 @@
 use ExtUtils::MakeMaker;
+my $pm = 'lib/Net/IPv6Addr.pm';
 my $github = 'github.com/benkasminbullock/net-ipv6addr';
 my $repo = "https://$github";
 WriteMakefile(
     'AUTHOR' => 'Tony Monroe',
     'NAME'	=> 'Net::IPv6Addr',
-    'VERSION_FROM' => 'lib/Net/IPv6Addr.pm', # finds $VERSION
+    'VERSION_FROM' => $pm,
     'PREREQ_PM' => { 
-	'Net::IPv4Addr' => 0, 
-	'Math::Base85' => 0 
+	'Net::IPv4Addr' => '0.10', 
+	'Math::Base85' => '0.2',
+	'Carp' => '0',
+	'Math::BigInt' => '0',
     },
     LICENSE => 'perl',
     META_MERGE => {
