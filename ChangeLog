@@ -1,6 +1,8 @@
 2017-08-15      Ben Bullock <bkb@cpan.org>              (0.3)
 
 	* Add meta files to distribution
+	* in_network altered
+	* Documentation updates
 
 2002-05-03	Tony Monroe <tmonroe+perl@nog.net>	(0.2)
 
