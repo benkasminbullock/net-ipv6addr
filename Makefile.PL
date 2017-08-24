@@ -8,6 +8,7 @@ WriteMakefile(
 	'Net::IPv4Addr' => 0, 
 	'Math::Base85' => 0 
     },
+    LICENSE => 'perl',
     META_MERGE => {
 	'meta-spec' => {
 	    version => 2,
