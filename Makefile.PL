@@ -2,6 +2,7 @@ use ExtUtils::MakeMaker;
 my $github = 'github.com/benkasminbullock/net-ipv6addr';
 my $repo = "https://$github";
 WriteMakefile(
+    'AUTHOR' => 'Tony Monroe',
     'NAME'	=> 'Net::IPv6Addr',
     'VERSION_FROM' => 'lib/Net/IPv6Addr.pm', # finds $VERSION
     'PREREQ_PM' => { 
@@ -19,15 +20,14 @@ WriteMakefile(
 		url => "git://$github.git",
 		web => $repo,
 	    },
-        x_contributors => [
+	},
+	x_contributors => [
 	    'Jyrki Soini',
 	    'Joacim Haggmark',
-            'Ben Bullock <bkb@cpan.org>',
-        ],
-        bugtracker => {
+	    'Ben Bullock <bkb@cpan.org>',
+	],
+	bugtracker => {
 	    web => "https://rt.cpan.org/Dist/Display.html?Name=Net-IPv6Addr",
 	},
-#	    homepage => 'http://',
-        },
     },
 );
