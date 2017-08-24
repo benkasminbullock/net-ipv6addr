@@ -103,6 +103,13 @@ if (defined $Math::Base85::base85_digits) {
     ];
 }
 
+sub mycroak
+{
+    my ($message) = @_;
+    my @caller = caller (1);
+    croak __PACKAGE__ . '::' . $caller[3] . ' -- ' . $message;
+}
+
 =pod
 
 =head1 new
@@ -120,13 +127,6 @@ A C<Net::IPv6Addr> object if successful.
 Throws an exception if the string isn't a valid address.
 
 =cut
-
-sub mycroak
-{
-    my ($message) = @_;
-    my @caller = caller (1);
-    croak __PACKAGE__ . '::' . $caller[3] . ' -- ' . $message;
-}
 
 sub new
 {

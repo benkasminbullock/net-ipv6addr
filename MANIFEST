@@ -14,3 +14,4 @@ t/new.t
 t/parse.t
 t/preferred.t
 t/string.t
+t/synopsis.t

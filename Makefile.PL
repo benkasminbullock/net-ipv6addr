@@ -24,9 +24,9 @@ WriteMakefile(
 	    'Joacim Haggmark',
             'Ben Bullock <bkb@cpan.org>',
         ],
-#            bugtracker => {
-#		web => "$repo/issues",
-#	    },
+        bugtracker => {
+	    web => "https://rt.cpan.org/Dist/Display.html?Name=Net-IPv6Addr",
+	},
 #	    homepage => 'http://',
         },
     },
