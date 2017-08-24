@@ -831,6 +831,13 @@ iNsu dot COME<gt>.
 Some fixes and subroutines from Jyrki Soini E<lt>jyrki dot soini
 at sonera dot comE<gt>.
 
+=head1 LICENSE
+
+This distribution is copyright (c) 2001-2002 Tony Monroe.  All rights
+reserved.  This software is distributed under the same license terms
+as Perl itself.  This software comes with NO WARRANTIES WHATSOEVER,
+express, implied, or otherwise.
+
 =head1 HISTORY
 
 This was originally written to simplify the task of maintaining
