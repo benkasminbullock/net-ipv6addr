@@ -816,7 +816,9 @@ __END__
 
 =head1 BUGS
 
-probably exist in this module.  Please report them.
+probably exist in this module.  Please report them at
+L<https://rt.cpan.org/Dist/Display.html?Name=Net-IPv6Addr> or by email
+to C<bug-Net-IPv6Addr [at] rt.cpan.org>.
 
 =head1 AUTHOR
 
@@ -838,6 +840,10 @@ there's really only one DNS-related subroutine in here.
 =head1 DEPENDENCIES
 
 L<Net::IPv4Addr>, L<Math::Base85>, L<Math::BigInt>
+
+=head2 Reverse dependencies
+
+L<Search grep.cpan.me for uses of this module|http://grep.cpan.me/?q=Net%3A%3AIPv6Addr%5Cb>
 
 =head1 SEE ALSO
 
