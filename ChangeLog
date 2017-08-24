@@ -1,4 +1,10 @@
-2017-08-15      Ben Bullock <bkb@cpan.org>              (0.3)
+2017-08-24      Ben Bullock <bkb@cpan.org>              (0.4)
+
+	* Add contributors and licence information
+	* Add documentation
+	* Remove RFCs from distro
+
+2017-08-24      Ben Bullock <bkb@cpan.org>              (0.3)
 
 	* Add meta files to distribution
 	* in_network altered
