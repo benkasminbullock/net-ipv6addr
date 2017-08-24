@@ -1,6 +1,4 @@
 use ExtUtils::MakeMaker;
-# See lib/ExtUtils/MakeMaker.pm for details of how to influence
-# the contents of the Makefile that is written.
 my $github = 'github.com/benkasminbullock/net-ipv6addr';
 my $repo = "https://$github";
 WriteMakefile(
@@ -20,6 +18,11 @@ WriteMakefile(
 		url => "git://$github.git",
 		web => $repo,
 	    },
+        x_contributors => [
+	    'Jyrki Soini',
+	    'Joacim Haggmark',
+            'Ben Bullock <bkb@cpan.org>',
+        ],
 #            bugtracker => {
 #		web => "$repo/issues",
 #	    },
