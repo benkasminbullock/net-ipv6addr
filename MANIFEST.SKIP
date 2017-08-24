@@ -1,0 +1,11 @@
+^pm_to_blib$
+^MYMETA\..*
+^Net-IPv6Addr-[0-9].*$
+^build\.pl$
+^Makefile(?:\.(?:old|bak))?$
+^\.git/.*
+^\.gitignore$
+.*~$
+^blib/.*
+^MANIFEST\.bak$
+

@@ -1,8 +1,12 @@
 ChangeLog
-IPv6Addr.pm
-MANIFEST
+lib/Net/IPv6Addr.pm
 Makefile.PL
+MANIFEST
+MANIFEST.SKIP
 README
+rfc1886.txt
+rfc1924.txt
+rfc2373.txt
 t/base85.t
 t/chkip.t
 t/compressed.t
@@ -12,6 +16,3 @@ t/new.t
 t/parse.t
 t/preferred.t
 t/string.t
-rfc1886.txt
-rfc1924.txt
-rfc2373.txt
