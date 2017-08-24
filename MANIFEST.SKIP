@@ -9,3 +9,4 @@
 ^#.*
 ^blib/.*
 ^MANIFEST\.bak$
+^xt/.*\.t$
