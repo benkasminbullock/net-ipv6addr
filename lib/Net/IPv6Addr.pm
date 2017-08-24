@@ -18,9 +18,9 @@ Net::IPv6Addr - Check validity of IPv6 addresses
 =head1 SYNOPSIS
 
     use Net::IPv6Addr;
-
+    my $addr = "dead:beef:cafe:babe::f0ad";
     Net::IPv6Addr::ipv6_parse($addr);
-    $x = Net::IPv6Addr->new("dead:beef:cafe:babe::f0ad");
+    my $x = Net::IPv6Addr->new($addr);
     print $x->to_string_preferred(), "\n";
 
 =head1 DESCRIPTION
