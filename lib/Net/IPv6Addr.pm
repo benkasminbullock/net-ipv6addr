@@ -15,6 +15,10 @@ use Math::Base85;
 
 Net::IPv6Addr - Check validity of IPv6 addresses
 
+=head1 VERSION
+
+This documents Net::IPv6Addr version 0.4.
+
 =head1 SYNOPSIS
 
     use Net::IPv6Addr;
@@ -41,7 +45,7 @@ The public interface of this module is rather small.
 @EXPORT = qw();
 @EXPORT_OK = qw();
 
-$VERSION = '0.3';
+$VERSION = '0.4';
 
 # We get these formats from rfc1884:
 #
@@ -117,6 +121,13 @@ Throws an exception if the string isn't a valid address.
 
 =cut
 
+sub mycroak
+{
+    my ($message) = @_;
+    my @caller = caller (1);
+    croak __PACKAGE__ . '::' . $caller[3] . ' -- ' . $message;
+}
+
 sub new
 {
     my $proto = shift;
@@ -124,7 +135,7 @@ sub new
     my $maybe_ip = shift;
     my $parser = ipv6_chkip($maybe_ip);
     if (ref $parser ne 'CODE') {
-	croak __PACKAGE__, "::new -- invalid IPv6 address $maybe_ip";
+	mycroak "invalid IPv6 address $maybe_ip";
     }
     my @hexadecets = $parser->($maybe_ip);
     my $self = \@hexadecets;
@@ -167,7 +178,7 @@ sub ipv6_parse
     }
 
     unless (ipv6_chkip($ip)) {
-	croak __PACKAGE__, "::ipv6_parse -- invalid IPv6 address $ip\n";
+	mycroak "invalid IPv6 address $ip\n";
     }
 
     $pfx =~ s/\s+//g if defined($pfx);
@@ -175,10 +186,10 @@ sub ipv6_parse
     if (defined $pfx) {
 	if ($pfx =~ /^\d+$/) {
 	    if (($pfx < 0)  || ($pfx > 128)) {
-		croak __PACKAGE__, "::ipv6_parse -- invalid prefix length $pfx\n";
+		mycroak "invalid prefix length $pfx\n";
 	    }
 	} else {
-	    croak __PACKAGE__, "::ipv6_parse -- non-numeric prefix length $pfx\n";
+	    mycroak "non-numeric prefix length $pfx\n";
 	}
     } else {
 	return $ip;
@@ -282,7 +293,7 @@ sub ipv6_parse_preferred
     my @patterns = @{$ipv6_patterns{'preferred'}};
     for my $p (@patterns) {
 	if (ref($p) eq 'CODE') {
-	    croak __PACKAGE__, "::ipv6_parse_preferred -- invalid address";
+	    mycroak "invalid address";
 	}
 	last if ($ip =~ $p);
     }
@@ -297,7 +308,7 @@ sub ipv6_parse_compressed
     my @patterns = @{$ipv6_patterns{'compressed'}};
     for my $p (@patterns) {
 	if (ref($p) eq 'CODE') {
-	    croak __PACKAGE__, "::ipv6_parse_compressed -- invalid address";
+	    mycroak "invalid address";
 	}
 	last if ($ip =~ $p);
     }
@@ -315,7 +326,7 @@ sub ipv6_parse_ipv4
     my @patterns = @{$ipv6_patterns{'ipv4'}};
     for my $p (@patterns) {
 	if (ref($p) eq 'CODE') {
-	    croak __PACKAGE__, "::ipv6_parse_ipv4 -- invalid address";
+	    mycroak "invalid address";
 	}
 	last if ($ip =~ $p);
     }
@@ -338,7 +349,7 @@ sub ipv6_parse_ipv4_compressed
     my @patterns = @{$ipv6_patterns{'ipv4 compressed'}};
     for my $p (@patterns) {
 	if (ref($p) eq 'CODE') {
-	    croak __PACKAGE__, "::ipv6_parse_ipv4_compressed -- invalid address";
+	    mycroak "invalid address";
 	}
 	last if ($ip =~ $p);
     }
@@ -362,13 +373,12 @@ sub ipv6_parse_ipv4_compressed
 
 sub ipv6_parse_base85
 {
-    croak __PACKAGE__, "::ipv6_parse_base85 -- Math::Base85 not loaded" unless defined $Math::Base85::base85_digits;
     my $ip = shift;
     my $r;
     my @patterns = @{$ipv6_patterns{'base85'}};
     for my $p (@patterns) {
 	if (ref($p) eq 'CODE') {
-	    croak __PACKAGE__, "::ipv6_parse_base85 -- invalid address";
+	    mycroak "invalid address";
 	}
 	last if ($ip =~ $p);
     }
@@ -484,10 +494,10 @@ sub to_string_ipv4
 	return Net::IPv6Addr->new($self)->to_string_ipv4();
     }
     if ($self->[0] | $self->[1] | $self->[2] | $self->[3] | $self->[4]) {
-	croak __PACKAGE__, "::to_string_ipv4 -- not originally an IPv4 address";
+	mycroak "not originally an IPv4 address";
     }
     if (($self->[5] != 0xffff) && $self->[5]) {
-	croak __PACKAGE__, "::to_string_ipv4 -- not originally an IPv4 address";
+	mycroak "not originally an IPv4 address";
     }
     my $v6part = join(':', map { sprintf("%x", $_) } @$self[0..5]);
     my $v4part = join('.', $self->[6] >> 8, $self->[6] & 0xff, $self->[7] >> 8,  $self->[7] & 0xff);
@@ -521,10 +531,10 @@ sub to_string_ipv4_compressed
 	return Net::IPv6Addr->new($self)->to_string_ipv4_compressed();
     }
     if ($self->[0] | $self->[1] | $self->[2] | $self->[3] | $self->[4]) {
-	croak __PACKAGE__, "::to_string_ipv4 -- not originally an IPv4 address";
+	mycroak "not originally an IPv4 address";
     }
     if (($self->[5] != 0xffff) && $self->[5]) {
-	croak __PACKAGE__, "::to_string_ipv4 -- not originally an IPv4 address";
+	mycroak "not originally an IPv4 address";
     }
     my $v6part;
     if ($self->[5]) {
@@ -558,7 +568,6 @@ Invalid input will generate an exception.
 
 sub to_string_base85
 {
-    croak __PACKAGE__, "::to_string_base85 -- Math::Base85 not loaded" unless defined $Math::Base85::base85_digits;
     my $self = shift;
     if (ref $self ne __PACKAGE__) {
 	return Net::IPv6Addr->new($self)->to_string_base85();
@@ -593,7 +602,6 @@ Invalid input will generate an exception.
 
 sub to_bigint
 {
-    croak __PACKAGE__, "::to_bigint -- Math::BigInt not loaded" unless defined &Math::BigInt::new;
     my $self = shift;
     if (ref $self ne __PACKAGE__) {
 	return Net::IPv6Addr->new($self)->to_bigint();
@@ -728,11 +736,11 @@ sub in_network_of_size
     }
     my $netsize = shift;
     if (!defined $netsize) {
-      croak __PACKAGE__, "::in_network_of_size -- not network size given";
+      mycroak "not network size given";
     }
     $netsize =~ s!/!!;
     if ($netsize !~ /^\d+$/ or $netsize < 0 or $netsize > 128) {
-      croak __PACKAGE__, "::in_network_of_size -- not valid network size $netsize";
+      mycroak "not valid network size $netsize";
     }
     my @parts = @$self;
     my $i = $netsize / 16;
@@ -782,11 +790,11 @@ sub in_network
       $netsize = $2;
     }
     unless (defined $netsize) {
-      croak __PACKAGE__, "::in_network -- not enough parameters";
+      mycroak "not enough parameters";
     }
     $netsize =~ s!/!!;
     if ($netsize !~ /^\d+$/ or $netsize < 0 or $netsize > 128) {
-      croak __PACKAGE__, "::in_network -- not valid network size $netsize";
+      mycroak "not valid network size $netsize";
     }
     my @s = $self->in_network_of_size($netsize)->to_intarray;
     $net = Net::IPv6Addr->new($net) unless (ref $net);
@@ -827,9 +835,22 @@ This was originally written to simplify the task of maintaining
 DNS records after I set myself up with Freenet6.  Interesting that
 there's really only one DNS-related subroutine in here.
 
+=head1 DEPENDENCIES
+
+L<Net::IPv4Addr>, L<Math::Base85>, L<Math::BigInt>
+
 =head1 SEE ALSO
 
-RFC1884, RFC1886, RFC1924, L<perl>, L<Net::IPv4Addr>, L<Math::Base85>,
-L<Math::BigInt>
+=head2 RFCs
+
+RFC1884, RFC1886, RFC1924
+
+=head2 Other CPAN modules
+
+=over
+
+=item L<Net::IPv6Address>
+
+=back
 
 =cut
