@@ -6,6 +6,6 @@
 ^\.git/.*
 ^\.gitignore$
 .*~$
+^#.*
 ^blib/.*
 ^MANIFEST\.bak$
-
