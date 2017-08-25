@@ -10,6 +10,7 @@ my $ok = GetOptions (
     all => \my $all,
     clean => \my $clean,
     pan => \my $pan,
+    install => \my $install,
 );
 if ($pan) {
     clean ();
@@ -22,11 +23,16 @@ if ($clean) {
 elsif ($all) {
     clean ();
     system ("git add .;git commit -a") == 0 or die "Git commit failed";
+    exit;
 }
 else {
+    system ("perl $Bin/make-pod.pl") == 0 or die $!;
     system ("perl Makefile.PL;make;make test") == 0 or die;
     if ($dist) {
 	system ("make manifest;make dist") == 0 or die;
+    }
+    if ($install) {
+	system ("make install") == 0 or die;
     }
 }
 if ($pan) {

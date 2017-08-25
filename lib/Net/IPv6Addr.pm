@@ -13,36 +13,7 @@ use Net::IPv4Addr;
 use Math::BigInt;
 use Math::Base85;
 
-=pod
 
-=head1 NAME
-
-Net::IPv6Addr - Check validity of IPv6 addresses
-
-=head1 VERSION
-
-This documents Net::IPv6Addr version 0.4.
-
-=head1 SYNOPSIS
-
-    use Net::IPv6Addr;
-    my $addr = "dead:beef:cafe:babe::f0ad";
-    Net::IPv6Addr::ipv6_parse($addr);
-    my $x = Net::IPv6Addr->new($addr);
-    print $x->to_string_preferred(), "\n";
-
-=head1 DESCRIPTION
-
-C<Net::IPv6Addr> checks strings for valid IPv6 addresses, as
-specified in RFC1884.  You throw possible addresses at it, it
-either accepts them or throws an exception.
-
-If C<Math::Base85> is installed, then this module is able to process
-addresses formatted in the style referenced by RFC1924.
-
-The public interface of this module is rather small.
-
-=cut
 
 # We get these formats from rfc1884:
 #
@@ -107,23 +78,7 @@ sub mycroak
     croak __PACKAGE__ . '::' . $caller[3] . ' -- ' . $message;
 }
 
-=pod
 
-=head1 new
-
-=head2 Parameters
-
-A string to be interpreted as an IPv6 address.
-
-=head2 Returns
-
-A C<Net::IPv6Addr> object if successful.
-
-=head2 Notes
-
-Throws an exception if the string isn't a valid address.
-
-=cut
 
 sub new
 {
@@ -140,30 +95,7 @@ sub new
     return $self;
 }
 
-=pod
 
-=head1 ipv6_parse
-
-=head2 Parameters
-
-A string containing an IPv6 address string.  Optionally, it may
-also include a C</> character, and a numeric prefix length, in that
-order.
-
-	-or-
-
-An IPv6 address string.  Optionally, a numeric prefix length.
-
-=head2 Returns
-
-What you gave it, more or less, if it does parse out correctly.
-
-=head2 Notes
-
-Throws an exception on malformed input.  This is not an object
-method or class method; it's just a subroutine.
-
-=cut
 
 sub ipv6_parse
 {
@@ -194,30 +126,7 @@ sub ipv6_parse
     wantarray ? ($ip, $pfx) : "$ip/$pfx";
 }
 
-=pod
 
-=head1 is_ipv6
-
-=head2 Parameters
-
-A string containing an IPv6 address string.  Optionally, it may
-also include a C</> character, and a numeric prefix length, in that
-order.
-
-	-or-
-
-An IPv6 address string.  Optionally, a numeric prefix length.
-
-=head2 Returns
-
-What you gave it, more or less, if it does parse out correctly,
-otherwise returns undef.
-
-=head2 Notes
-
-This is not an object method or class method; it is just a subroutine.
-
-=cut
 
 sub is_ipv6
 {
@@ -247,19 +156,7 @@ sub is_ipv6
     wantarray ? ($ip, $pfx) : "$ip/$pfx";
 }
 
-=pod
 
-=head1 ipv6_chkip
-
-=head2 Parameters
-
-An IPv6 address string.
-
-=head2 Returns
-
-Something true if it's a valid address; something false otherwise.
-
-=cut
 
 sub ipv6_chkip
 {
@@ -392,25 +289,7 @@ sub ipv6_parse_base85
     return @result;
 }
 
-=pod
 
-=head1 to_string_preferred
-
-=head2 Parameters
-
-If used as an object method, none; if used as a plain old subroutine,
-an IPv6 address string in any format.
-
-=head2 Returns
-
-The IPv6 address, formatted in the "preferred" way (as detailed by
-RFC1884).
-
-=head2 Notes
-
-Invalid input will generate an exception.
-
-=cut
 
 sub to_string_preferred
 {
@@ -421,24 +300,7 @@ sub to_string_preferred
     return Net::IPv6Addr->new($self)->to_string_preferred();
 }
 
-=pod
 
-=head1 to_string_compressed
-
-=head2 Parameters
-
-If used as an object method, none; if used as a plain old subroutine,
-an IPv6 address string in any format.
-
-=head2 Returns
-
-The IPv6 address in "compressed" format (as detailed by RFC1884).
-
-=head2 Notes
-
-Invalid input will generate an exception.
-
-=cut
 
 sub to_string_compressed
 {
@@ -464,25 +326,7 @@ sub to_string_compressed
     return $expanded;
 }
 
-=pod
 
-=head1 to_string_ipv4
-
-=head2 Parameters
-
-If used as an object method, none; if used as a plain old subroutine,
-an IPv6 address string in any format.
-
-=head2 Returns
-
-The IPv6 address in IPv4 format (as detailed by RFC1884).
-
-=head2 Notes
-
-Invalid input (such as an address that was not originally IPv4)
-will generate an exception.
-
-=cut
 
 sub to_string_ipv4
 {
@@ -501,25 +345,7 @@ sub to_string_ipv4
     return "$v6part:$v4part";
 }
 
-=pod
 
-=head1 to_string_ipv4_compressed
-
-=head2 Parameters
-
-If used as an object method, none; if used as a plain old subroutine,
-an IPv6 address string in any format.
-
-=head2 Returns
-
-The IPv6 address in compressed IPv4 format (as detailed by RFC1884).
-
-=head2 Notes
-
-Invalid input (such as an address that was not originally IPv4)
-will generate an exception.
-
-=cut
 
 sub to_string_ipv4_compressed
 {
@@ -544,24 +370,7 @@ sub to_string_ipv4_compressed
 }
 
 
-=pod
 
-=head1 to_string_base85
-
-=head2 Parameters
-
-If used as an object method, none; if used as a plain old subroutine,
-an IPv6 address string in any format.
-
-=head2 Returns
-
-The IPv6 address in the style detailed by RFC1924.
-
-=head2 Notes
-
-Invalid input will generate an exception.
-
-=cut
 
 sub to_string_base85
 {
@@ -578,24 +387,7 @@ sub to_string_base85
     return Math::Base85::to_base85($bigint);
 }
 
-=pod
 
-=head1 to_bigint
-
-=head2 Parameters
-
-If used as an object method, none; if used as a plain old subroutine,
-an IPv6 address string in any format.
-
-=head2 Returns
-
-The BigInt representation of IPv6 address.
-
-=head2 Notes
-
-Invalid input will generate an exception.
-
-=cut
 
 sub to_bigint
 {
@@ -613,24 +405,7 @@ sub to_bigint
     return  $bigint;
 }
 
-=pod
 
-=head1 to_array
-
-=head2 Parameters
-
-If used as an object method, none; if used as a plain old subroutine,
-an IPv6 address string in any format.
-
-=head2 Returns
-
-An array [0..7] of 16 bit hexadecimal numbers.
-
-=head2 Notes
-
-Invalid input will generate an exception.
-
-=cut
 
 sub to_array
 {
@@ -640,24 +415,7 @@ sub to_array
     }
     return map {sprintf "%04x", $_} @$self;
 }
-=pod
 
-=head1 to_intarray
-
-=head2 Parameters
-
-If used as an object method, none; if used as a plain old subroutine,
-an IPv6 address string in any format.
-
-=head2 Returns
-
-An array [0..7] of decimal numbers.
-
-=head2 Notes
-
-Invalid input will generate an exception.
-
-=cut
 
 sub to_intarray
 {
@@ -668,24 +426,7 @@ sub to_intarray
     return @$self;
 }
 
-=pod
 
-=head1 to_string_ip6_int
-
-=head2 Parameters
-
-If used as an object method, none; if used as a plain old subroutine,
-an IPv6 address string in any format.
-
-=head2 Returns
-
-The reverse-address pointer as defined by RFC1886.
-
-=head2 Notes
-
-Invalid input will generate an exception.
-
-=cut
 
 sub to_string_ip6_int
 {
@@ -700,26 +441,7 @@ sub to_string_ip6_int
 }
 
 
-=pod
 
-=head1 in_network_of_size
-
-=head2 Parameters
-
-If used as an object method, network size in bits
-
-If used as a plain old subroutine, an IPv6 address string in any format
-and network size in bits. Network size may be given with / notation.
-
-=head2 Returns
-
-Network IPv6Addr of given size.
-
-=head2 Notes
-
-Invalid input will generate an exception.
-
-=cut
 
 sub in_network_of_size
 {
@@ -753,27 +475,7 @@ sub in_network_of_size
     #    return Net::IPv6Addr->new(join(':', @parts));
 }
 
-=pod
 
-=head1 in_network
-
-=head2 Parameters
-
-If used as an object method, network and its size in bits
-
-If used as a plain old subroutine, an IPv6 address string in any format
-network address string and size in bits.
-Network size may be given with / notation.
-
-=head2 Returns
-
-A true value if address is a member of the network, false otherwise.
-
-=head2 Notes
-
-Invalid input will generate an exception.
-
-=cut
 
 sub in_network
 {
@@ -809,67 +511,4 @@ sub in_network
 1;
 __END__
 
-=pod
 
-=head1 BUGS
-
-probably exist in this module.  Please report them at
-L<https://rt.cpan.org/Dist/Display.html?Name=Net-IPv6Addr> or by email
-to C<bug-Net-IPv6Addr [at] rt.cpan.org>.
-
-=head1 AUTHOR
-
-Tony Monroe
-
-The module's interface probably looks like it vaguely resembles
-L<Net::IPv4Addr> by Francis J. Lacoste E<lt>francis dot lacoste at
-iNsu dot COME<gt>.
-
-Some fixes and subroutines from Jyrki Soini E<lt>jyrki dot soini
-at sonera dot comE<gt>.
-
-=head1 LICENSE
-
-This distribution is copyright (c) 2001-2002 Tony Monroe.  All rights
-reserved.  This software is distributed under the same license terms
-as Perl itself.  This software comes with NO WARRANTIES WHATSOEVER,
-express, implied, or otherwise.
-
-=head1 HISTORY
-
-This was originally written to simplify the task of maintaining
-DNS records after I set myself up with Freenet6.  Interesting that
-there's really only one DNS-related subroutine in here.
-
-=head1 DEPENDENCIES
-
-L<Net::IPv4Addr>, L<Math::Base85>, L<Math::BigInt>
-
-=head2 Reverse dependencies
-
-L<Search grep.cpan.me for uses of this module|http://grep.cpan.me/?q=Net%3A%3AIPv6Addr%5Cb>
-
-=head1 SEE ALSO
-
-=head2 RFCs
-
-L<RFC1884|https://www.ietf.org/rfc/rfc1884.txt>,
-L<RFC1886|https://www.ietf.org/rfc/rfc1886.txt>,
-L<RFC1924|https://www.ietf.org/rfc/rfc1924.txt>,
-L<RFC2373|https://www.ietf.org/rfc/rfc2373.txt>
-
-=head2 Other CPAN modules
-
-=over
-
-=item L<Net::IPv6Address>
-
-=item L<IPv6::Address>
-
-=item L<Regexp::IPv6>
-
-=item L<IPTables::IPv6>
-
-=back
-
-=cut
