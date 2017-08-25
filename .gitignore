@@ -1,3 +1,4 @@
 Makefile
 ChangeLog~
 lib/Net/IPv6Addr.pod
+examples/*-out.txt
