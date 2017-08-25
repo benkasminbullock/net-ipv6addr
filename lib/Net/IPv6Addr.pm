@@ -15,22 +15,6 @@ use Math::Base85;
 
 
 
-# We get these formats from rfc1884:
-#
-#	preferred form: x:x:x:x:x:x:x:x
-# 
-#	zero-compressed form: the infamous double-colon.  
-#	Too many pattern matches to describe in this margin.
-#
-#	mixed IPv4/IPv6 format: x:x:x:x:x:x:d.d.d.d
-#
-#	mixed IPv4/IPv6 with compression: ::d.d.d.d or ::FFFF:d.d.d.d
-#
-# And we get these from rfc1924:
-#
-#	base-85-encoded: [0-9A-Za-z!#$%&()*+-;<=>?@^_`{|}~]{20}
-#
-
 my %ipv6_patterns = (
     'preferred' => [
 	qr/^(?:[a-f0-9]{1,4}:){7}[a-f0-9]{1,4}$/i,
