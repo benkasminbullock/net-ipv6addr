@@ -1,5 +1,9 @@
 Revision history for Perl module Net::IPv6Addr
 
+0.7 2017-08-26      Ben Bullock <bkb@cpan.org>
+
+	* Documentation rewrite
+
 0.6 2017-08-25      Ben Bullock <bkb@cpan.org>
 
 	* Changed format of ChangeLog to follow CPAN::Changes::Spec,

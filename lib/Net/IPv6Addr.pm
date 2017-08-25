@@ -6,7 +6,7 @@ use warnings;
 our @ISA = qw(Exporter);
 our @EXPORT = qw();
 our @EXPORT_OK = qw();
-our $VERSION = '0.6';
+our $VERSION = '0.7';
 
 use Carp;
 use Net::IPv4Addr;
