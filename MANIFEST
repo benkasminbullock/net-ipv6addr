@@ -1,5 +1,7 @@
 ChangeLog
+examples/synopsis.pl
 lib/Net/IPv6Addr.pm
+lib/Net/IPv6Addr.pod
 Makefile.PL
 MANIFEST
 MANIFEST.SKIP
