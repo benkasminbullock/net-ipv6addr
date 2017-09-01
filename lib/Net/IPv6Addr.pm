@@ -5,7 +5,8 @@ use warnings;
 
 our @ISA = qw(Exporter);
 our @EXPORT = qw();
-our @EXPORT_OK = qw();
+our @EXPORT_OK = qw(ipv6_parse is_ipv6);
+our %EXPORT_TAGS = (all => \@EXPORT_OK);
 our $VERSION = '0.7';
 
 use Carp;
@@ -151,10 +152,9 @@ sub is_ipv6
 sub ipv6_chkip
 {
     my $ip = shift; 
-    my ($pattern, $parser);
     my @patlist;
 
-    $parser = undef;
+    my $parser = undef;
 
     TYPE:
     for my $k (keys %ipv6_patterns) {
