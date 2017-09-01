@@ -67,13 +67,20 @@ Throws an exception if the string isn't a valid address.
 
 =head2 ipv6_parse
 
-    my $ni = Net::IPv6Addr::ipv6_parse ('dead:beef:cafe:babe::f0ad');
+    my ($ni, $pl) = Net::IPv6Addr::ipv6_parse ('dead:beef:cafe:babe::f0ad');
 
 =head3 Parameters
 
 A string containing an IPv6 address string.  Optionally, it may
 also include a C</> character, and a numeric prefix length, in that
 order.
+
+    my ($x, $y) = Net::IPv6Addr::ipv6_parse("a::/24");
+
+An IPv6 address string, with an optional second argument consisting of a
+numeric prefix length.
+
+    my ($x, $y) = Net::IPv6Addr::ipv6_parse('a::', '24');
 
 =head3 Returns
 

@@ -86,12 +86,13 @@ sub ipv6_parse
     my ($ip, $pfx);
     if (@_ == 2) {
 	($ip, $pfx) = @_;
-    } else {
+    }
+    else {
 	($ip, $pfx) = split(m!/!, $_[0])
     }
 
     unless (ipv6_chkip($ip)) {
-	mycroak "invalid IPv6 address $ip\n";
+	mycroak "invalid IPv6 address $ip";
     }
 
     $pfx =~ s/\s+//g if defined($pfx);
@@ -99,12 +100,14 @@ sub ipv6_parse
     if (defined $pfx) {
 	if ($pfx =~ /^\d+$/) {
 	    if (($pfx < 0)  || ($pfx > 128)) {
-		mycroak "invalid prefix length $pfx\n";
+		mycroak "invalid prefix length $pfx";
 	    }
-	} else {
-	    mycroak "non-numeric prefix length $pfx\n";
 	}
-    } else {
+	else {
+	    mycroak "non-numeric prefix length $pfx";
+	}
+    }
+    else {
 	return $ip;
     }
     wantarray ? ($ip, $pfx) : "$ip/$pfx";
@@ -117,7 +120,8 @@ sub is_ipv6
     my ($ip, $pfx);
     if (@_ == 2) {
 	($ip, $pfx) = @_;
-    } else {
+    }
+    else {
 	($ip, $pfx) = split(m!/!, $_[0])
     }
 
@@ -129,12 +133,14 @@ sub is_ipv6
         $pfx =~ s/s+//g;
 	if ($pfx =~ /^\d+$/) {
 	    if (($pfx < 0)  || ($pfx > 128)) {
-               return undef;
+		return undef;
 	    }
-	} else {
+	}
+	else {
             return undef;
 	}
-    } else {
+    }
+    else {
 	return $ip;
     }
     wantarray ? ($ip, $pfx) : "$ip/$pfx";
@@ -150,10 +156,10 @@ sub ipv6_chkip
 
     $parser = undef;
 
-TYPE:
+    TYPE:
     for my $k (keys %ipv6_patterns) {
 	@patlist = @{$ipv6_patterns{$k}};
-PATTERN:
+	PATTERN:
 	for my $pattern (@patlist) {
 	    last PATTERN if (ref($pattern) eq 'CODE');
 	    if ($ip =~ $pattern) {
@@ -301,7 +307,7 @@ sub to_string_compressed
 	$expanded =~ s/::::/_/ or
 	$expanded =~ s/:::/_/ or
 	$expanded =~ s/::/_/
-        ) {
+    ) {
         $expanded =~ s/:(?=:)/:0/g;
 	$expanded =~ s/^:(?=[0-9a-f])/0:/;
 	$expanded =~ s/([0-9a-f]):$/$1:0/;
@@ -346,7 +352,8 @@ sub to_string_ipv4_compressed
     my $v6part;
     if ($self->[5]) {
 	$v6part = sprintf("::%x", $self->[5]);
-    } else {
+    }
+    else {
 	$v6part = ":";
     }
     my $v4part = join('.', $self->[6] >> 8, $self->[6] & 0xff, $self->[7] >> 8,  $self->[7] & 0xff);
@@ -431,28 +438,28 @@ sub in_network_of_size
 {
     my $self = shift;
     if (ref $self ne __PACKAGE__) {
-      if ($self =~ m!(.+)/(.+)!) {
-	unshift @_, $2;
-	return Net::IPv6Addr->new($1)->in_network_of_size(@_)->to_string_preferred;
-      }
-      return Net::IPv6Addr->new($self)->in_network_of_size(@_)->to_string_preferred;
+	if ($self =~ m!(.+)/(.+)!) {
+	    unshift @_, $2;
+	    return Net::IPv6Addr->new($1)->in_network_of_size(@_)->to_string_preferred;
+	}
+	return Net::IPv6Addr->new($self)->in_network_of_size(@_)->to_string_preferred;
     }
     my $netsize = shift;
     if (!defined $netsize) {
-      mycroak "not network size given";
+	mycroak "not network size given";
     }
     $netsize =~ s!/!!;
     if ($netsize !~ /^\d+$/ or $netsize < 0 or $netsize > 128) {
-      mycroak "not valid network size $netsize";
+	mycroak "not valid network size $netsize";
     }
     my @parts = @$self;
     my $i = $netsize / 16;
-    unless ($i == 8) { # netsize was 128 bits; the whole address
-      my $j = $netsize % 16;
-      $parts[$i] &= unpack("C4",pack("B16", '1' x $j . '0000000000000000'));
-      foreach $j (++$i..$#parts) {
-	$parts[$j] = 0;
-      }
+    unless ($i == 8) {	     # netsize was 128 bits; the whole address
+	my $j = $netsize % 16;
+	$parts[$i] &= unpack("C4",pack("B16", '1' x $j . '0000000000000000'));
+	foreach $j (++$i..$#parts) {
+	    $parts[$j] = 0;
+	}
     }
     # https://rt.cpan.org/Ticket/Display.html?id=79325
     return Net::IPv6Addr->new(sprintf("%04x" x 8, @parts));
@@ -465,19 +472,19 @@ sub in_network
 {
     my $self = shift;
     if (ref $self ne __PACKAGE__) {
-      return Net::IPv6Addr->new($self)->in_network(@_);
+	return Net::IPv6Addr->new($self)->in_network(@_);
     }
     my ($net,$netsize) = (@_);
     if ($net =~ m!/!) {
-      $net =~ s!(.*)/(.*)!$1!;
-      $netsize = $2;
+	$net =~ s!(.*)/(.*)!$1!;
+	$netsize = $2;
     }
     unless (defined $netsize) {
-      mycroak "not enough parameters";
+	mycroak "not enough parameters";
     }
     $netsize =~ s!/!!;
     if ($netsize !~ /^\d+$/ or $netsize < 0 or $netsize > 128) {
-      mycroak "not valid network size $netsize";
+	mycroak "not valid network size $netsize";
     }
     my @s = $self->in_network_of_size($netsize)->to_intarray;
     $net = Net::IPv6Addr->new($net) unless (ref $net);
@@ -486,13 +493,12 @@ sub in_network
     $i++;
     $i = $#s if ($i > $#s);
     for (0..$i) {
-      return 0 unless ($s[$_] == $n[$_]);
+	return 0 unless ($s[$_] == $n[$_]);
     }
     return 1;
 }
 
-
 1;
-__END__
+
 
 
