@@ -82,6 +82,8 @@ sub mycroak
 # |_|   \__,_|_|  |___/\___|_|  |___/
 #                                   
 
+# Match $ip against the regexes of type $type, or die.
+
 sub match_or_die
 {
     my ($ip, $type) = @_;
@@ -229,10 +231,9 @@ sub ipv6_chkip
 }
 
 
-sub ipv6_parse
+sub getargs
 {
     my ($ip, $pfx);
-
     if (@_ == 2) {
 	($ip, $pfx) = @_;
     }
@@ -242,6 +243,12 @@ sub ipv6_parse
     else {
 	mycroak "wrong number of arguments (need 1 or 2)";
     }
+    return ($ip, $pfx);
+}
+
+sub ipv6_parse
+{
+    my ($ip, $pfx) = getargs (@_);
 
     unless (ipv6_chkip($ip)) {
 	mycroak "invalid IPv6 address $ip";
@@ -424,6 +431,16 @@ sub to_string_ip6_int
     return $ptr . ".";
 }
 
+# Private - validate a given netsize
+
+sub validate_netsize
+{
+    my ($netsize) = @_;
+    if ($netsize !~ /^[0-9]+$/ || $netsize > 128) {
+	mycroak "invalid network size $netsize";
+    }
+}
+
 
 sub in_network_of_size
 {
@@ -437,12 +454,10 @@ sub in_network_of_size
     }
     my $netsize = shift;
     if (!defined $netsize) {
-	mycroak "not network size given";
+	mycroak "network size not given";
     }
     $netsize =~ s!/!!;
-    if ($netsize !~ /^\d+$/ or $netsize < 0 or $netsize > 128) {
-	mycroak "not valid network size $netsize";
-    }
+    validate_netsize ($netsize);
     my @parts = @$self;
     my $i = $netsize / 16;
     unless ($i == 8) {	     # netsize was 128 bits; the whole address
@@ -467,26 +482,25 @@ sub in_network
     if (ref $self ne __PACKAGE__) {
 	return Net::IPv6Addr->new($self)->in_network(@_);
     }
-    my ($net,$netsize) = (@_);
-    if ($net =~ m!/!) {
-	$net =~ s!(.*)/(.*)!$1!;
-	$netsize = $2;
-    }
+    my ($net, $netsize) = getargs (@_);
     unless (defined $netsize) {
 	mycroak "not enough parameters";
     }
     $netsize =~ s!/!!;
-    if ($netsize !~ /^\d+$/ or $netsize < 0 or $netsize > 128) {
-	mycroak "not valid network size $netsize";
-    }
+    validate_netsize ($netsize);
     my @s = $self->in_network_of_size($netsize)->to_intarray;
-    $net = Net::IPv6Addr->new($net) unless (ref $net);
+    if (! ref $net) {
+	$net = Net::IPv6Addr->new($net);
+    }
     my @n = $net->in_network_of_size($netsize)->to_intarray;
-    my $i = int($netsize / 16);
-    $i++;
-    $i = $#s if ($i > $#s);
+    my $i = int ($netsize / 16) + 1;
+    if ($i > $#s) {
+	$i = $#s;
+    }
     for (0..$i) {
-	return 0 unless ($s[$_] == $n[$_]);
+	if ($s[$_] != $n[$_]) {
+	    return undef;
+	}
     }
     return 1;
 }
