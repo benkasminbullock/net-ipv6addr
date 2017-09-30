@@ -13,7 +13,7 @@ our @EXPORT_OK = qw(
 		       is_ipv6
 	       );
 our %EXPORT_TAGS = (all => \@EXPORT_OK);
-our $VERSION = '0.8';
+our $VERSION = '0.9';
 
 use Carp;
 use Net::IPv4Addr;
