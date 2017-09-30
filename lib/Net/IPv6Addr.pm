@@ -74,9 +74,15 @@ my %ipv6_patterns = (
     ],
 );
 
-# Private routine for errors which include the package name and the
-# subroutine name. This is for consistency with earlier versions of
-# the module.
+#  ____       _            _       
+# |  _ \ _ __(_)_   ____ _| |_ ___ 
+# | |_) | '__| \ \ / / _` | __/ _ \
+# |  __/| |  | |\ V / (_| | ||  __/
+# |_|   |_|  |_| \_/ \__,_|\__\___|
+#                                 
+
+# Errors which include the package name and the subroutine name. This
+# is for consistency with earlier versions of the module.
 
 sub mycroak
 {
@@ -85,12 +91,23 @@ sub mycroak
     croak __PACKAGE__ . '::' . $caller[3] . ' -- ' . $message;
 }
 
-#  ____                              
-# |  _ \ __ _ _ __ ___  ___ _ __ ___ 
-# | |_) / _` | '__/ __|/ _ \ '__/ __|
-# |  __/ (_| | |  \__ \  __/ |  \__ \
-# |_|   \__,_|_|  |___/\___|_|  |___/
-#                                   
+# Given one argument with a slash or two arguments, return them as two
+# arguments, and check there are one or two arguments.
+
+sub getargs
+{
+    my ($ip, $pfx);
+    if (@_ == 2) {
+	($ip, $pfx) = @_;
+    }
+    elsif (@_ == 1) {
+	($ip, $pfx) = split(m!/!, $_[0])
+    }
+    else {
+	mycroak "wrong number of arguments (need 1 or 2)";
+    }
+    return ($ip, $pfx);
+}
 
 # Match $ip against the regexes of type $type, or die.
 
@@ -107,6 +124,23 @@ sub match_or_die
 	}
     }
 }
+
+# Make the bit mask for "in_network_of_size".
+
+sub bitmask
+{
+    my ($j) = @_;
+    my $bitmask = '1' x $j . '0' x (16 - $j);
+    my $k = unpack("n",pack("B16", $bitmask));
+    return $k;
+}
+
+#  ____                              
+# |  _ \ __ _ _ __ ___  ___ _ __ ___ 
+# | |_) / _` | '__/ __|/ _ \ '__/ __|
+# |  __/ (_| | |  \__ \  __/ |  \__ \
+# |_|   \__,_|_|  |___/\___|_|  |___/
+#                                   
 
 # Private parser
 
@@ -125,8 +159,7 @@ sub ipv6_parse_compressed
 {
     my $ip = shift;
     match_or_die ($ip, 'compressed');
-    my $colons;
-    $colons = ($ip =~ tr/:/:/);
+    my $colons = ($ip =~ tr/:/:/);
     my $expanded = ':' x (9 - $colons);
     $ip =~ s/::/$expanded/;
     my @pieces = split(/:/, $ip, 8);
@@ -241,27 +274,11 @@ sub ipv6_chkip
 }
 
 
-sub getargs
-{
-    my ($ip, $pfx);
-    if (@_ == 2) {
-	($ip, $pfx) = @_;
-    }
-    elsif (@_ == 1) {
-	($ip, $pfx) = split(m!/!, $_[0])
-    }
-    else {
-	mycroak "wrong number of arguments (need 1 or 2)";
-    }
-    return ($ip, $pfx);
-}
-
-
 sub ipv6_parse
 {
     my ($ip, $pfx) = getargs (@_);
 
-    unless (ipv6_chkip($ip)) {
+    if (! ipv6_chkip($ip)) {
 	mycroak "invalid IPv6 address $ip";
     }
 
@@ -406,7 +423,7 @@ sub to_bigint
     }
     $bigint = $bigint + $self->[7];
     $bigint =~ s/\+//;
-    return  $bigint;
+    return $bigint;
 }
 
 
@@ -464,21 +481,28 @@ sub in_network_of_size
 	$self = Net::IPv6Addr->new($self);
     }
     my $netsize = shift;
-    if (!defined $netsize) {
+    if (! defined $netsize) {
 	mycroak "network size not given";
     }
     $netsize =~ s!/!!;
     validate_netsize ($netsize);
     my @parts = @$self;
-    my $i = $netsize / 16;
-    unless ($i == 8) {	     # netsize was 128 bits; the whole address
+    my $i = int ($netsize / 16);
+    if ($i < 8) {
 	my $j = $netsize % 16;
-	$parts[$i] &= unpack("C4",pack("B16", '1' x $j . '0000000000000000'));
-	foreach $j (++$i..$#parts) {
-	    $parts[$j] = 0;
+	if ($j) {
+	    # If $netsize is not a multiple of 16, truncate the lowest
+	    # 16-$j bits of the $ith element of @parts.
+	    $parts[$i] &= bitmask ($j);
+	    # Jump over this element.
+	    $i++;
+	}
+	# Set all the remaining lower parts to zero.
+	for ($i..$#parts) {
+	    $parts[$_] = 0;
 	}
     }
-    return Net::IPv6Addr->new(sprintf("%04x" x 8, @parts));
+    return bless \@parts;
 }
 
 
@@ -494,10 +518,10 @@ sub in_network
     }
     $netsize =~ s!/!!;
     validate_netsize ($netsize);
-    my @s = $self->in_network_of_size($netsize)->to_intarray;
     if (! ref $net) {
 	$net = Net::IPv6Addr->new($net);
     }
+    my @s = $self->in_network_of_size($netsize)->to_intarray;
     my @n = $net->in_network_of_size($netsize)->to_intarray;
     my $i = int ($netsize / 16) + 1;
     if ($i > $#s) {

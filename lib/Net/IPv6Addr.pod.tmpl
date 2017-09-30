@@ -57,6 +57,9 @@ Too many pattern matches to describe in this margin.
 
     my $ni = Net::IPv6Addr->new ('dead:beef:cafe:babe::f0ad');
 
+Create a new Net::IPv6Addr object from a string. Internally, the
+object is a blessed array reference containing the eight
+
 =head3 Parameters
 
 A string to be interpreted as an IPv6 address.
@@ -220,7 +223,7 @@ an IPv6 address string in any format.
 
 =head3 Returns
 
-The BigInt representation of IPv6 address.
+The BigInt representation of the given IPv6 address.
 
 =head3 Notes
 
@@ -279,20 +282,25 @@ Invalid input will generate an exception.
 
 =head2 in_network_of_size
 
+    my $obj = $x->in_network_of_size ($n);
+
+Given an input IPv6 address $x, this returns the C<$n>
+most-significant bits of C<$x> as a new Net::IPv6Addr object.
+
 =head3 Parameters
 
 If used as an object method, network size in bits
 
-    my $ok = $x->in_network_of_size (64);
+    my $obj = $x->in_network_of_size (64);
 
 If used as a subroutine, an IPv6 address string in any format
 and network size in bits.
 
-    my $ok = Net::IPv6::in_network_of_size ($addr, 64);
+    my $obj = Net::IPv6::in_network_of_size ($addr, 64);
 
 Network size may be given with / notation:
 
-    my $ok = Net::IPv6::in_network_of_size ("$addr/64");
+    my $obj = Net::IPv6::in_network_of_size ("$addr/64");
 
 =head3 Returns
 
@@ -302,9 +310,8 @@ Network IPv6Addr of given size.
 
 Invalid input will generate an exception. 
 
-As of [% info. version %], this subroutine does not have any tests in
-the test suite.
-
+Prior to version 0.09, this did not work correctly unless the net size
+was a multiple of sixteen due to a misuse of "pack" syntax.
 
 =head2 in_network
 
@@ -335,9 +342,8 @@ A true value if the address is a member of the network, false otherwise.
 
 Invalid input will generate an exception.
 
-As of [% info. version %], this subroutine has only minimal tests in
-the test suite.
-
+Prior to version 0.09, this did not work correctly unless the net size
+was a multiple of sixteen due to a misuse of "pack" syntax.
 
 =head1 EXPORTS
 
