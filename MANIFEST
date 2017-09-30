@@ -9,6 +9,7 @@ README
 t/base85.t
 t/chkip.t
 t/compressed.t
+t/in-network.t
 t/ipv4.t
 t/ipv4comp.t
 t/joacim.t
