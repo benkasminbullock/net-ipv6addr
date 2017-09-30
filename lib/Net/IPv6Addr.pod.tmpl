@@ -67,25 +67,25 @@ Throws an exception if the string isn't a valid address.
 
 =head2 ipv6_parse
 
-    my ($ni, $pl) = Net::IPv6Addr::ipv6_parse ('dead:beef:cafe:babe::f0ad');
+    my ($ni, $pl) = ipv6_parse ('dead:beef:cafe:babe::f0ad');
 
 =head3 Parameters
 
-A string containing an IPv6 address string.  Optionally, it may
-also include a C</> character, and a numeric prefix length, in that
-order.
+Either a string containing an IPv6 address string, which may also
+include a C</> character and a numeric prefix length,
 
-    my ($x, $y) = Net::IPv6Addr::ipv6_parse("a::/24");
+    my ($x, $y) = ipv6_parse ("a::/24");
 
-An IPv6 address string, with an optional second argument consisting of a
-numeric prefix length.
+or an IPv6 address string, with an optional second argument consisting
+of a numeric prefix length:
 
-    my ($x, $y) = Net::IPv6Addr::ipv6_parse('a::', '24');
+    my ($x, $y) = ipv6_parse('a::', '24');
 
 =head3 Returns
 
-The return value is a list consisting of the address string and the
-prefix, if it does parse out correctly.
+Called in array context, the return value is a list consisting of the
+address string and the prefix, if it parses correctly. Called in
+scalar context, the address and prefix are concatenated with "/".
 
 =head3 Notes
 
@@ -94,24 +94,17 @@ method or class method; it's just a subroutine.
 
 =head2 is_ipv6
 
-    my $niok = Net::IPv6Addr::is_ipv6 ('dead:beef:cafe:babe::f0ad');
+    my $niok = is_ipv6 ('dead:beef:cafe:babe::f0ad');
 
 =head3 Parameters
 
-A string containing an IPv6 address string.  Optionally, it may
-also include a C</> character, and a numeric prefix length, in that
-order.
-
-An IPv6 address string.  Optionally, a numeric prefix length.
+Identical to L</ipv6_parse>.
 
 =head3 Returns
 
-What you gave it, more or less, if it does parse out correctly,
-otherwise returns undef.
-
-=head3 Notes
-
-This is not an object method or class method; it is just a subroutine.
+This returns the return value of L</ipv6_parse>, called in scalar
+context, if it does parse out correctly, otherwise it returns
+C<undef>.
 
 =head2 ipv6_chkip
 
@@ -119,7 +112,7 @@ This is not an object method or class method; it is just a subroutine.
 
 =head3 Parameters
 
-An IPv6 address string.
+An IPv6 address string, without a prefix.
 
 =head3 Returns
 
@@ -313,10 +306,12 @@ Invalid input will generate an exception.
 
 =head1 EXPORTS
 
-As of version [% info.version %], nothing at all can be exported, so
-all of the routines need to be called in fully-qualified format, like
-C<Net::IPv6Addr::is_ipv6>. This may change in future versions of the
-module.
+As of version [% info.version %], L</ipv6_parse> and L</is_ipv6> may
+be exported on demand. All of the other routines need to be called in
+fully-qualified format, like C<Net::IPv6Addr::is_ipv6>. The exported
+functions may all be exported using
+
+    use Net::IPv6Addr ':all';
 
 =head1 BUGS
 

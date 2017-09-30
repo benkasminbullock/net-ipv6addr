@@ -18,12 +18,19 @@ use Math::Base85;
 
 my $h = qr/[a-f0-9]{1,4}/i;
 
+# base-85
+
+my $digits;
+($digits = $Math::Base85::base85_digits) =~ s/-//;
+my $x = "[" . $digits . "-]";
+my $n = "{20}";
+
 my %ipv6_patterns = (
     'preferred' => [
 	qr/^(?:$h:){7}$h$/i,
 	\&ipv6_parse_preferred,
     ],
-    'compressed' => [		## No, this isn't pretty.
+    'compressed' => [
 	qr/^[a-f0-9]{0,4}::$/i,
 	qr/^:(?::$h){1,6}$/i,
 	qr/^(?:$h:){1,6}:$/i,
@@ -44,19 +51,12 @@ my %ipv6_patterns = (
 	qr/^::(?:ffff:)?(?:\d{1,3}\.){3}\d{1,3}$/i,
 	\&ipv6_parse_ipv4_compressed,
     ],
-); 
-
-# base-85
-if (defined $Math::Base85::base85_digits) {
-    my $digits;
-    ($digits = $Math::Base85::base85_digits) =~ s/-//;
-    my $x = "[" . $digits . "-]";
-    my $n = "{20}";
-    $ipv6_patterns{'base85'} = [
+    'base85' => [
 	qr/$x$n/,
 	\&ipv6_parse_base85,
-    ];
-}
+    ],
+);
+
 
 sub mycroak
 {
@@ -64,6 +64,7 @@ sub mycroak
     my @caller = caller (1);
     croak __PACKAGE__ . '::' . $caller[3] . ' -- ' . $message;
 }
+
 
 sub new
 {
@@ -81,15 +82,40 @@ sub new
 }
 
 
+sub ipv6_chkip
+{
+    my $ip = shift; 
+
+    my $parser = undef;
+
+    TYPE:
+    for my $k (keys %ipv6_patterns) {
+	my @patlist = @{$ipv6_patterns{$k}};
+	PATTERN:
+	for my $pattern (@patlist) {
+	    last PATTERN if (ref($pattern) eq 'CODE');
+	    if ($ip =~ $pattern) {
+		$parser = $patlist[-1];
+		last TYPE;
+	    }
+	}
+    }
+    return $parser;
+}
+
 
 sub ipv6_parse
 {
     my ($ip, $pfx);
+
     if (@_ == 2) {
 	($ip, $pfx) = @_;
     }
-    else {
+    elsif (@_ == 1) {
 	($ip, $pfx) = split(m!/!, $_[0])
+    }
+    else {
+	mycroak "wrong number of arguments (need 1 or 2)";
     }
 
     unless (ipv6_chkip($ip)) {
@@ -115,61 +141,18 @@ sub ipv6_parse
 }
 
 
-
 sub is_ipv6
 {
-    my ($ip, $pfx);
-    if (@_ == 2) {
-	($ip, $pfx) = @_;
-    }
-    else {
-	($ip, $pfx) = split(m!/!, $_[0])
-    }
-
-    unless (ipv6_chkip($ip)) {
+    my $r;
+    eval {
+	$r = ipv6_parse (@_);
+    };
+    if ($@) {
 	return undef;
     }
-
-    if (defined $pfx) {
-        $pfx =~ s/s+//g;
-	if ($pfx =~ /^\d+$/) {
-	    if (($pfx < 0)  || ($pfx > 128)) {
-		return undef;
-	    }
-	}
-	else {
-            return undef;
-	}
-    }
-    else {
-	return $ip;
-    }
-    wantarray ? ($ip, $pfx) : "$ip/$pfx";
+    return $r;
 }
 
-
-
-sub ipv6_chkip
-{
-    my $ip = shift; 
-    my @patlist;
-
-    my $parser = undef;
-
-    TYPE:
-    for my $k (keys %ipv6_patterns) {
-	@patlist = @{$ipv6_patterns{$k}};
-	PATTERN:
-	for my $pattern (@patlist) {
-	    last PATTERN if (ref($pattern) eq 'CODE');
-	    if ($ip =~ $pattern) {
-		$parser = $patlist[-1];
-		last TYPE;
-	    }
-	}
-    }
-    return $parser;
-}
 
 sub ipv6_parse_preferred
 {
@@ -185,6 +168,7 @@ sub ipv6_parse_preferred
     splice(@pieces, 8);
     return map { hex } @pieces;
 }
+
 
 sub ipv6_parse_compressed
 {
@@ -203,6 +187,7 @@ sub ipv6_parse_compressed
     my @pieces = split(/:/, $ip, 8);
     return map { hex } @pieces;
 }
+
 
 sub ipv6_parse_ipv4
 {
@@ -226,6 +211,7 @@ sub ipv6_parse_ipv4
     push @result, unpack("n", pack("CC", @v4pcs[2,3]));
     return @result;
 }
+
 
 sub ipv6_parse_ipv4_compressed
 {
@@ -255,6 +241,7 @@ sub ipv6_parse_ipv4_compressed
     return @result;
 }
 
+
 sub ipv6_parse_base85
 {
     my $ip = shift;
@@ -280,7 +267,6 @@ sub ipv6_parse_base85
 }
 
 
-
 sub to_string_preferred
 {
     my $self = shift;
@@ -289,7 +275,6 @@ sub to_string_preferred
     } 
     return Net::IPv6Addr->new($self)->to_string_preferred();
 }
-
 
 
 sub to_string_compressed
@@ -317,7 +302,6 @@ sub to_string_compressed
 }
 
 
-
 sub to_string_ipv4
 {
     my $self = shift;
@@ -334,7 +318,6 @@ sub to_string_ipv4
     my $v4part = join('.', $self->[6] >> 8, $self->[6] & 0xff, $self->[7] >> 8,  $self->[7] & 0xff);
     return "$v6part:$v4part";
 }
-
 
 
 sub to_string_ipv4_compressed
@@ -361,8 +344,6 @@ sub to_string_ipv4_compressed
 }
 
 
-
-
 sub to_string_base85
 {
     my $self = shift;
@@ -377,7 +358,6 @@ sub to_string_base85
     $bigint = $bigint + $self->[7];
     return Math::Base85::to_base85($bigint);
 }
-
 
 
 sub to_bigint
@@ -395,7 +375,6 @@ sub to_bigint
     $bigint =~ s/\+//;
     return  $bigint;
 }
-
 
 
 sub to_array
@@ -418,7 +397,6 @@ sub to_intarray
 }
 
 
-
 sub to_string_ip6_int
 {
     my $self = shift;
@@ -430,8 +408,6 @@ sub to_string_ip6_int
     my $ptr = join('.', reverse @nibbles);
     return $ptr . ".";
 }
-
-
 
 
 sub in_network_of_size
@@ -499,6 +475,3 @@ sub in_network
 }
 
 1;
-
-
-

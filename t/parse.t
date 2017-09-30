@@ -28,8 +28,9 @@ like($@, qr/invalid prefix length/, "Reject excessive prefix length");
 ok (! is_ipv6 ($input), "Reject excessive prefix length");
 
 $input = "a:b:c:d:0:1:2:3";
-is(scalar(Net::IPv6Addr::ipv6_parse($input)), $input, "Valid address OK");
-ok (is_ipv6 ($input), "Valid address OK");
+is(scalar(Net::IPv6Addr::ipv6_parse($input)), $input,
+   "Valid address OK (ipv6_parse)");
+ok (is_ipv6 ($input), "Valid address OK (is_ipv6)");
 
 $input = "a::/24";
 my ($x, $y) = Net::IPv6Addr::ipv6_parse($input);
