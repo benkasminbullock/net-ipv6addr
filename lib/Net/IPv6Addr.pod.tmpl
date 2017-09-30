@@ -92,6 +92,7 @@ scalar context, the address and prefix are concatenated with "/".
 Throws an exception on malformed input.  This is not an object
 method or class method; it's just a subroutine.
 
+
 =head2 is_ipv6
 
     my $niok = is_ipv6 ('dead:beef:cafe:babe::f0ad');
@@ -106,9 +107,10 @@ This returns the return value of L</ipv6_parse>, called in scalar
 context, if it does parse out correctly, otherwise it returns
 C<undef>.
 
+
 =head2 ipv6_chkip
 
-    my $niok = Net::IPv6Addr::ipv6_chkip ('dead:beef:cafe:babe::f0ad');
+    my $niok = ipv6_chkip ('dead:beef:cafe:babe::f0ad');
 
 =head3 Parameters
 
@@ -250,6 +252,7 @@ An array [0..7] of decimal numbers.
 
 Invalid input will generate an exception.
 
+This does not have any tests in the current test suite.
 
 =head2 to_string_ip6_int
 
@@ -273,8 +276,12 @@ Invalid input will generate an exception.
 
 If used as an object method, network size in bits
 
+    my $ok = $x->in_network_of_size (64);
+
 If used as a plain old subroutine, an IPv6 address string in any format
 and network size in bits. Network size may be given with / notation.
+
+    my $ok = Net::IPv6::in_network_of_size (64);
 
 =head3 Returns
 
@@ -282,19 +289,32 @@ Network IPv6Addr of given size.
 
 =head3 Notes
 
-Invalid input will generate an exception.
+Invalid input will generate an exception. 
+
+As of [% info. version %], this subroutine does not have any tests in
+the test suite.
+
 
 =head2 in_network
 
-    my $ok = $x->in_network("aa:bb:cc:dd::/64");
+    my $ok = $x->in_network ("aa:bb:cc:dd::/64");
 
 =head3 Parameters
 
-If used as an object method, network and its size in bits
+If used as an object method, a network and its size in bits
 
-If used as a plain old subroutine, an IPv6 address string in any format
-network address string and size in bits.
-Network size may be given with / notation.
+    my $ok = $x->in_network ("aa:bb:cc:dd::", 64);
+
+If used as a subroutine, an IPv6 address string in any format,
+followed by a network address string and its size in bits.
+
+    my $addr = 'fd00::54:20c:29fe:fe14:ab4b';
+    my $ok = Net::IPv6Addr::in_network ($addr, "aa:bb:cc:dd::", 64);
+
+The network size may also be given with the / notation after the
+network address string:
+
+    my $ok = $x->in_network("aa:bb:cc:dd::/64");
 
 =head3 Returns
 
@@ -304,14 +324,20 @@ A true value if address is a member of the network, false otherwise.
 
 Invalid input will generate an exception.
 
+As of [% info. version %], this subroutine has only minimal tests in
+the test suite.
+
+
 =head1 EXPORTS
 
-As of version [% info.version %], L</ipv6_parse> and L</is_ipv6> may
-be exported on demand. All of the other routines need to be called in
-fully-qualified format, like C<Net::IPv6Addr::is_ipv6>. The exported
-functions may all be exported using
+As of version [% info.version %], L</ipv6_chkip>, L</ipv6_parse> and
+L</is_ipv6> may be exported on demand. All of the other routines need
+to be called in fully-qualified format, like
+C<Net::IPv6Addr::is_ipv6>. The exported functions may all be exported
+using
 
     use Net::IPv6Addr ':all';
+
 
 =head1 BUGS
 
@@ -359,13 +385,14 @@ Freenet6.
 In 2017 the module was adopted by Ben Bullock with the help of Neil
 Bowers as part of "CPAN day".
 
+Exporting of some functions was added in version 0.08.
+
 =head1 AUTHOR
 
 Tony Monroe(*)
 
-The module's interface probably looks like it vaguely resembles
-L<Net::IPv4Addr> by Francis J. Lacoste E<lt>francis dot lacoste at
-iNsu dot COME<gt>.
+The module's interface resembles L<Net::IPv4Addr> by Francis
+J. Lacoste E<lt>francis dot lacoste at iNsu dot COME<gt>.
 
 Some fixes and subroutines from Jyrki Soini E<lt>jyrki dot soini
 at sonera dot comE<gt>.

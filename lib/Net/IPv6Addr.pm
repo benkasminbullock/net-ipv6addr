@@ -5,7 +5,7 @@ use warnings;
 
 our @ISA = qw(Exporter);
 our @EXPORT = qw();
-our @EXPORT_OK = qw(ipv6_parse is_ipv6);
+our @EXPORT_OK = qw(ipv6_parse is_ipv6 ipv6_chkip);
 our %EXPORT_TAGS = (all => \@EXPORT_OK);
 our $VERSION = '0.8';
 
@@ -21,9 +21,13 @@ use Math::Base85;
 # |_|   \__,_|\__|\__\___|_|  |_| |_|___/
 #                                       
 
-# Matches one to four digits of hexadecimal
+# Match one to four digits of hexadecimal
 
 my $h = qr/[a-f0-9]{1,4}/i;
+
+# Match one to three digits
+
+my $d = qr/[0-9]{1,3}/;
 
 # base-85
 
@@ -50,12 +54,12 @@ my %ipv6_patterns = (
 	\&ipv6_parse_compressed,
     ],
     'ipv4' => [
-	qr/^(?:0:){5}ffff:(?:\d{1,3}\.){3}\d{1,3}$/i,
-	qr/^(?:0:){6}(?:\d{1,3}\.){3}\d{1,3}$/,
+	qr/^(?:0:){5}ffff:(?:$d\.){3}$d$/i,
+	qr/^(?:0:){6}(?:$d\.){3}$d$/,
 	\&ipv6_parse_ipv4,
     ],
     'ipv4 compressed' => [
-	qr/^::(?:ffff:)?(?:\d{1,3}\.){3}\d{1,3}$/i,
+	qr/^::(?:ffff:)?(?:$d\.){3}$d$/i,
 	\&ipv6_parse_ipv4_compressed,
     ],
     'base85' => [
@@ -246,6 +250,7 @@ sub getargs
     return ($ip, $pfx);
 }
 
+
 sub ipv6_parse
 {
     my ($ip, $pfx) = getargs (@_);
@@ -292,10 +297,10 @@ sub is_ipv6
 sub to_string_preferred
 {
     my $self = shift;
-    if (ref $self eq __PACKAGE__) {
-	return join(":", map { sprintf("%x", $_) } @$self);
-    } 
-    return Net::IPv6Addr->new($self)->to_string_preferred();
+    if (ref $self ne __PACKAGE__) {
+	$self = Net::IPv6Addr->new ($self);
+    }
+    return join(":", map { sprintf("%x", $_) } @$self);
 }
 
 
@@ -303,7 +308,7 @@ sub to_string_compressed
 {
     my $self = shift;
     if (ref $self ne __PACKAGE__) {
-	return Net::IPv6Addr->new($self)->to_string_compressed();
+	$self = Net::IPv6Addr->new ($self);
     }
     my $expanded = join(":", map { sprintf("%x", $_) } @$self);
     $expanded =~ s/^0:/:/;
@@ -328,7 +333,7 @@ sub to_string_ipv4
 {
     my $self = shift;
     if (ref $self ne __PACKAGE__) {
-	return Net::IPv6Addr->new($self)->to_string_ipv4();
+	$self = Net::IPv6Addr->new ($self);
     }
     if ($self->[0] | $self->[1] | $self->[2] | $self->[3] | $self->[4]) {
 	mycroak "not originally an IPv4 address";
@@ -346,7 +351,7 @@ sub to_string_ipv4_compressed
 {
     my $self = shift;
     if (ref $self ne __PACKAGE__) {
-	return Net::IPv6Addr->new($self)->to_string_ipv4_compressed();
+	$self = Net::IPv6Addr->new ($self);
     }
     if ($self->[0] | $self->[1] | $self->[2] | $self->[3] | $self->[4]) {
 	mycroak "not originally an IPv4 address";
@@ -370,7 +375,7 @@ sub to_string_base85
 {
     my $self = shift;
     if (ref $self ne __PACKAGE__) {
-	return Net::IPv6Addr->new($self)->to_string_base85();
+	$self = Net::IPv6Addr->new ($self);
     }
     my $bigint = new Math::BigInt("0");
     for my $i (@{$self}[0..6]) {
@@ -386,7 +391,7 @@ sub to_bigint
 {
     my $self = shift;
     if (ref $self ne __PACKAGE__) {
-	return Net::IPv6Addr->new($self)->to_bigint();
+	$self = Net::IPv6Addr->new ($self);
     }
     my $bigint = new Math::BigInt("0");
     for my $i (@{$self}[0..6]) {
@@ -403,7 +408,7 @@ sub to_array
 {
     my $self = shift;
     if (ref $self ne __PACKAGE__) {
-	return Net::IPv6Addr->new($self)->to_array();
+	$self = Net::IPv6Addr->new ($self);
     }
     return map {sprintf "%04x", $_} @$self;
 }
@@ -413,7 +418,7 @@ sub to_intarray
 {
     my $self = shift;
     if (ref $self ne __PACKAGE__) {
-	return Net::IPv6Addr->new($self)->to_intarray();
+	$self = Net::IPv6Addr->new ($self);
     }
     return @$self;
 }
@@ -423,7 +428,7 @@ sub to_string_ip6_int
 {
     my $self = shift;
     if (ref $self ne __PACKAGE__) {
-	return Net::IPv6Addr->new($self)->to_string_ip6_int();
+	$self = Net::IPv6Addr->new ($self);
     }
     my $hexdigits = sprintf("%04x" x 8, @$self);
     my @nibbles = ('INT', 'IP6', split(//, $hexdigits));
@@ -448,9 +453,9 @@ sub in_network_of_size
     if (ref $self ne __PACKAGE__) {
 	if ($self =~ m!(.+)/(.+)!) {
 	    unshift @_, $2;
-	    return Net::IPv6Addr->new($1)->in_network_of_size(@_)->to_string_preferred;
+	    $self = $1;
 	}
-	return Net::IPv6Addr->new($self)->in_network_of_size(@_)->to_string_preferred;
+	$self = Net::IPv6Addr->new($self);
     }
     my $netsize = shift;
     if (!defined $netsize) {
@@ -467,12 +472,7 @@ sub in_network_of_size
 	    $parts[$j] = 0;
 	}
     }
-    # This change was made by BKB based on a patch from the following
-    # bug report:
-    # https://rt.cpan.org/Ticket/Display.html?id=79325
-    # The commented-out return statement is the old version.
     return Net::IPv6Addr->new(sprintf("%04x" x 8, @parts));
-    #    return Net::IPv6Addr->new(join(':', @parts));
 }
 
 
@@ -480,11 +480,11 @@ sub in_network
 {
     my $self = shift;
     if (ref $self ne __PACKAGE__) {
-	return Net::IPv6Addr->new($self)->in_network(@_);
+	$self = Net::IPv6Addr->new ($self);
     }
     my ($net, $netsize) = getargs (@_);
     unless (defined $netsize) {
-	mycroak "not enough parameters";
+	mycroak "not enough parameters, need netsize";
     }
     $netsize =~ s!/!!;
     validate_netsize ($netsize);
