@@ -7,7 +7,7 @@ our @ISA = qw(Exporter);
 our @EXPORT = qw();
 our @EXPORT_OK = qw(ipv6_parse is_ipv6);
 our %EXPORT_TAGS = (all => \@EXPORT_OK);
-our $VERSION = '0.7';
+our $VERSION = '0.8';
 
 use Carp;
 use Net::IPv4Addr;
@@ -65,8 +65,6 @@ sub mycroak
     croak __PACKAGE__ . '::' . $caller[3] . ' -- ' . $message;
 }
 
-
-
 sub new
 {
     my $proto = shift;
@@ -98,21 +96,21 @@ sub ipv6_parse
 	mycroak "invalid IPv6 address $ip";
     }
 
-    $pfx =~ s/\s+//g if defined($pfx);
+    if (! defined $pfx) {
+	return $ip;
+    }
 
-    if (defined $pfx) {
-	if ($pfx =~ /^\d+$/) {
-	    if (($pfx < 0)  || ($pfx > 128)) {
-		mycroak "invalid prefix length $pfx";
-	    }
-	}
-	else {
-	    mycroak "non-numeric prefix length $pfx";
+    $pfx =~ s/\s+//g;
+
+    if ($pfx =~ /^[0-9]+$/) {
+	if ($pfx > 128) {
+	    mycroak "invalid prefix length $pfx";
 	}
     }
     else {
-	return $ip;
+	mycroak "non-numeric prefix length $pfx";
     }
+
     wantarray ? ($ip, $pfx) : "$ip/$pfx";
 }
 
