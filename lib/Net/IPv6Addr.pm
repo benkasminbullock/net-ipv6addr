@@ -5,7 +5,13 @@ use warnings;
 
 our @ISA = qw(Exporter);
 our @EXPORT = qw();
-our @EXPORT_OK = qw(ipv6_parse is_ipv6 ipv6_chkip);
+our @EXPORT_OK = qw(
+		       in_network
+		       in_network_of_size
+		       ipv6_chkip
+		       ipv6_parse
+		       is_ipv6
+	       );
 our %EXPORT_TAGS = (all => \@EXPORT_OK);
 our $VERSION = '0.8';
 
@@ -31,8 +37,8 @@ my $d = qr/[0-9]{1,3}/;
 
 # base-85
 
-my $digits;
-($digits = $Math::Base85::base85_digits) =~ s/-//;
+my $digits = $Math::Base85::base85_digits;
+$digits =~ s/-//;
 my $x = "[" . $digits . "-]";
 my $n = "{20}";
 

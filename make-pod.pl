@@ -7,6 +7,10 @@ use Perl::Build qw/get_info get_commit/;
 use Perl::Build::Pod ':all';
 use Deploy qw/do_system older/;
 use Getopt::Long;
+BEGIN: {
+    use lib "$Bin/lib";
+};
+use Net::IPv6Addr;
 my $ok = GetOptions (
     'force' => \my $force,
     'verbose' => \my $verbose,
@@ -32,6 +36,7 @@ my $output = "$Bin/lib/Net/$pod";
 my %vars = (
     info => $info,
     commit => $commit,
+    exports => \@Net::IPv6Addr::EXPORT_OK,
 );
 
 my $tt = Template->new (

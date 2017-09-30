@@ -13,15 +13,18 @@ produces output
 
 Net::IPv6Addr - Check validity of IPv6 addresses
 
+
 =head1 VERSION
 
 This documents version [% info.version %] of Net::IPv6Addr corresponding to
 L<git commit [% commit.commit %]|[% info.repo %]/commit/[%
 commit.commit %]> released on [% commit.date %].
 
+
 =head1 SYNOPSIS
 
 [% example("synopsis") %]
+
 
 =head1 DESCRIPTION
 
@@ -43,12 +46,12 @@ Too many pattern matches to describe in this margin.
 
 =item	mixed IPv4/IPv6 with compression: ::d.d.d.d or ::FFFF:d.d.d.d
 
-=item	base-85-encoded: [0-9A-Za-z!#$%&()*+-;<=>?@^_`{|}~]{20}
+=item	base-85-encoded: [0-9A-Za-z!#$%&()*+;<=>?@^_`{|}~-]{20}
 
 =back
 
-=head1 METHODS AND FUNCTIONS
 
+=head1 METHODS AND FUNCTIONS
 
 =head2 new
 
@@ -91,8 +94,7 @@ scalar context, the address and prefix are concatenated with "/".
 
 =head3 Notes
 
-Throws an exception on malformed input.  This is not an object
-method or class method; it's just a subroutine.
+Throws an exception on malformed input.
 
 
 =head2 is_ipv6
@@ -284,9 +286,13 @@ If used as an object method, network size in bits
     my $ok = $x->in_network_of_size (64);
 
 If used as a subroutine, an IPv6 address string in any format
-and network size in bits. Network size may be given with / notation.
+and network size in bits.
 
-    my $ok = Net::IPv6::in_network_of_size (64);
+    my $ok = Net::IPv6::in_network_of_size ($addr, 64);
+
+Network size may be given with / notation:
+
+    my $ok = Net::IPv6::in_network_of_size ("$addr/64");
 
 =head3 Returns
 
@@ -335,18 +341,27 @@ the test suite.
 
 =head1 EXPORTS
 
-As of version [% info.version %], L</ipv6_chkip>, L</ipv6_parse> and
-L</is_ipv6> may be exported on demand. All of the other routines need
-to be called in fully-qualified format, like
-C<Net::IPv6Addr::is_ipv6>. The exported functions may all be exported
-using
+As of version [% info.version %], L</[% exports.join('>, L</') %]> may
+be exported on demand. The other routines need to be called in
+fully-qualified format, like C<Net::IPv6Addr::is_ipv6>. The exported
+functions may all be exported using
 
     use Net::IPv6Addr ':all';
 
 
 =head1 BUGS
 
-Many of the routines do not have any tests.
+Known deficiencies include the following.
+
+=over
+
+=item No tests
+
+Many of the routines do not have any tests. This means that
+alterations to the code may have unintentionally altered the module's
+behaviour.
+
+=back
 
 Report further bugs at
 L<https://rt.cpan.org/Dist/Display.html?Name=Net-IPv6Addr> or by email
@@ -415,7 +430,7 @@ at sonera dot comE<gt>.
 
 (*) The current module maintainer does not have any contact
 information for Tony Monroe. Those wishing to contact him can do so
-via Neil Bowers (neilb@cpan.org).
+via Neil Bowers (see his CPAN user page for contact details).
 
 
 =head1 LICENSE
