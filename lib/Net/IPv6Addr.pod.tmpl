@@ -25,29 +25,30 @@ commit.commit %]> released on [% commit.date %].
 
 =head1 DESCRIPTION
 
-C<Net::IPv6Addr> checks strings for valid IPv6 addresses, as
-specified in L<RFC1884|/RFCs>.  You throw possible addresses at it, it
-either accepts them or throws an exception.
+C<Net::IPv6Addr> checks strings for valid IPv6 addresses, as specified
+in L<RFC1884|/RFCs>, and converts addresses into various formats.
 
-This module is able to process addresses formatted in the style
-referenced by L<RFC1924|/RFCs>.
+This module is able to process addresses formatted in the following
+styles given in L<RFC1924|/RFCs>:
 
-We get these formats from rfc1884:
+=over
 
-	preferred form: x:x:x:x:x:x:x:x
+=item preferred form: x:x:x:x:x:x:x:x
 
-	zero-compressed form: the infamous double-colon.  
-	Too many pattern matches to describe in this margin.
+=item zero-compressed form: the infamous double-colon.  
 
-	mixed IPv4/IPv6 format: x:x:x:x:x:x:d.d.d.d
+Too many pattern matches to describe in this margin.
 
-	mixed IPv4/IPv6 with compression: ::d.d.d.d or ::FFFF:d.d.d.d
+=item	mixed IPv4/IPv6 format: x:x:x:x:x:x:d.d.d.d
 
-And we get these from rfc1924:
+=item	mixed IPv4/IPv6 with compression: ::d.d.d.d or ::FFFF:d.d.d.d
 
-	base-85-encoded: [0-9A-Za-z!#$%&()*+-;<=>?@^_`{|}~]{20}
+=item	base-85-encoded: [0-9A-Za-z!#$%&()*+-;<=>?@^_`{|}~]{20}
+
+=back
 
 =head1 METHODS AND FUNCTIONS
+
 
 =head2 new
 
@@ -64,6 +65,7 @@ A C<Net::IPv6Addr> object if successful.
 =head3 Notes
 
 Throws an exception if the string isn't a valid address.
+
 
 =head2 ipv6_parse
 
@@ -120,6 +122,7 @@ An IPv6 address string, without a prefix.
 
 Something true if it's a valid address; something false otherwise.
 
+
 =head2 to_string_preferred
 
     my $tsp = $ni->to_string_preferred ();
@@ -127,7 +130,7 @@ Something true if it's a valid address; something false otherwise.
 
 =head3 Parameters
 
-If used as an object method, none; if used as a plain old subroutine,
+If used as an object method, none; if used as a subroutine,
 an IPv6 address string in any format.
 
 =head3 Returns
@@ -143,12 +146,12 @@ Invalid input will generate an exception.
 
 =head3 Parameters
 
-If used as an object method, none; if used as a plain old subroutine,
+If used as an object method, none; if used as a subroutine,
 an IPv6 address string in any format.
 
 =head3 Returns
 
-The IPv6 address in "compressed" format (as detailed by RFC1884).
+The IPv6 address in the "compressed" format detailed by L<RFC1884|/RFCs>.
 
 =head3 Notes
 
@@ -159,12 +162,12 @@ Invalid input will generate an exception.
 
 =head3 Parameters
 
-If used as an object method, none; if used as a plain old subroutine,
+If used as an object method, none; if used as a subroutine,
 an IPv6 address string in any format.
 
 =head3 Returns
 
-The IPv6 address in IPv4 format (as detailed by RFC1884).
+The IPv6 address in the IPv4 format detailed by L<RFC1884|/RFCs>.
 
 =head3 Notes
 
@@ -176,12 +179,13 @@ will generate an exception.
 
 =head3 Parameters
 
-If used as an object method, none; if used as a plain old subroutine,
+If used as an object method, none; if used as a subroutine,
 an IPv6 address string in any format.
 
 =head3 Returns
 
-The IPv6 address in compressed IPv4 format (as detailed by RFC1884).
+The IPv6 address in the compressed IPv4 format detailed by
+L<RFC1884|/RFCs>.
 
 =head3 Notes
 
@@ -193,12 +197,12 @@ will generate an exception.
 
 =head3 Parameters
 
-If used as an object method, none; if used as a plain old subroutine,
+If used as an object method, none; if used as a subroutine,
 an IPv6 address string in any format.
 
 =head3 Returns
 
-The IPv6 address in the style detailed by RFC1924.
+The IPv6 address in the style detailed by L<RFC1924|/RFCs>.
 
 =head3 Notes
 
@@ -209,7 +213,7 @@ Invalid input will generate an exception.
 
 =head3 Parameters
 
-If used as an object method, none; if used as a plain old subroutine,
+If used as an object method, none; if used as a subroutine,
 an IPv6 address string in any format.
 
 =head3 Returns
@@ -225,7 +229,7 @@ Invalid input will generate an exception.
 
 =head3 Parameters
 
-If used as an object method, none; if used as a plain old subroutine,
+If used as an object method, none; if used as a subroutine,
 an IPv6 address string in any format.
 
 =head3 Returns
@@ -241,7 +245,7 @@ Invalid input will generate an exception.
 
 =head3 Parameters
 
-If used as an object method, none; if used as a plain old subroutine,
+If used as an object method, none; if used as a subroutine,
 an IPv6 address string in any format.
 
 =head3 Returns
@@ -254,11 +258,12 @@ Invalid input will generate an exception.
 
 This does not have any tests in the current test suite.
 
+
 =head2 to_string_ip6_int
 
 =head3 Parameters
 
-If used as an object method, none; if used as a plain old subroutine,
+If used as an object method, none; if used as a subroutine,
 an IPv6 address string in any format.
 
 =head3 Returns
@@ -278,7 +283,7 @@ If used as an object method, network size in bits
 
     my $ok = $x->in_network_of_size (64);
 
-If used as a plain old subroutine, an IPv6 address string in any format
+If used as a subroutine, an IPv6 address string in any format
 and network size in bits. Network size may be given with / notation.
 
     my $ok = Net::IPv6::in_network_of_size (64);
@@ -318,7 +323,7 @@ network address string:
 
 =head3 Returns
 
-A true value if address is a member of the network, false otherwise.
+A true value if the address is a member of the network, false otherwise.
 
 =head3 Notes
 
@@ -341,9 +346,12 @@ using
 
 =head1 BUGS
 
-Report them at
+Many of the routines do not have any tests.
+
+Report further bugs at
 L<https://rt.cpan.org/Dist/Display.html?Name=Net-IPv6Addr> or by email
 to C<bug-Net-IPv6Addr [at] rt.cpan.org>.
+
 
 =head1 DEPENDENCIES
 
@@ -353,14 +361,20 @@ L<Net::IPv4Addr>, L<Math::Base85>, L<Math::BigInt>
 
 L<Search grep.cpan.me for uses of this module|http://grep.cpan.me/?q=Net%3A%3AIPv6Addr%5Cb>
 
+
 =head1 SEE ALSO
 
 =head2 RFCs
+
+The following RFCs (requests for comment, internet standards
+documentation) contain information on IPv6.
 
 L<RFC1884|https://www.ietf.org/rfc/rfc1884.txt>,
 L<RFC1886|https://www.ietf.org/rfc/rfc1886.txt>,
 L<RFC1924|https://www.ietf.org/rfc/rfc1924.txt>,
 L<RFC2373|https://www.ietf.org/rfc/rfc2373.txt>
+
+The links go to the plain text online versions of the RFCs.
 
 =head2 Other CPAN modules
 
@@ -376,6 +390,7 @@ L<RFC2373|https://www.ietf.org/rfc/rfc2373.txt>
 
 =back
 
+
 =head1 HISTORY
 
 This module was originally written by Tony Monroe in 2001 to simplify
@@ -386,6 +401,7 @@ In 2017 the module was adopted by Ben Bullock with the help of Neil
 Bowers as part of "CPAN day".
 
 Exporting of some functions was added in version 0.08.
+
 
 =head1 AUTHOR
 
@@ -400,6 +416,7 @@ at sonera dot comE<gt>.
 (*) The current module maintainer does not have any contact
 information for Tony Monroe. Those wishing to contact him can do so
 via Neil Bowers (neilb@cpan.org).
+
 
 =head1 LICENSE
 
