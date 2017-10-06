@@ -9,10 +9,11 @@ produces output
 
 (This example is included as L<F<[% pl %]>|https://api.metacpan.org/source/BKB/Net-IPv6Addr-[% info.version %]/examples/[% pl %]> in the distribution.)
 [% END %]
+=encoding UTF-8
+
 =head1 NAME
 
 Net::IPv6Addr - Check validity of IPv6 addresses
-
 
 =head1 VERSION
 
@@ -20,19 +21,15 @@ This documents version [% info.version %] of Net::IPv6Addr corresponding to
 L<git commit [% commit.commit %]|[% info.repo %]/commit/[%
 commit.commit %]> released on [% commit.date %].
 
-
 =head1 SYNOPSIS
 
 [% example("synopsis") %]
 
-
 =head1 DESCRIPTION
 
 C<Net::IPv6Addr> checks strings for valid IPv6 addresses, as specified
-in L<RFC1884|/RFCs>, and converts addresses into various formats.
-
-This module is able to process addresses formatted in the following
-styles given in L<RFC1924|/RFCs>:
+in L<RFC1884|/RFCs>, and converts addresses into various formats. It
+is able to process addresses formatted in the following styles;
 
 =over
 
@@ -48,8 +45,9 @@ Too many pattern matches to describe in this margin.
 
 =item	base-85-encoded: [0-9A-Za-z!#$%&()*+;<=>?@^_`{|}~-]{20}
 
-=back
+(This encoding was given in L<RFC1924|/RFCs> as an April Fool's joke.)
 
+=back
 
 =head1 METHODS AND FUNCTIONS
 
@@ -72,7 +70,6 @@ A C<Net::IPv6Addr> object if successful.
 =head3 Notes
 
 Throws an exception if the string isn't a valid address.
-
 
 =head2 ipv6_parse
 
@@ -113,8 +110,7 @@ Identical to L</ipv6_parse>.
 
 This returns the return value of L</ipv6_parse>, called in scalar
 context, if it does parse out correctly, otherwise it returns
-C<undef>.
-
+C<undef>. Unlike L</ipv6_parse>, is_ipv6 does not throw exceptions.
 
 =head2 ipv6_chkip
 
@@ -131,8 +127,7 @@ Something true if it's a valid address; something false otherwise.
 
 =head2 to_string_preferred
 
-    my $tsp = $ni->to_string_preferred ();
-    my $tsp = Net::IPv6Addr::to_string_preferred ('dead:beef:cafe:babe::f0ad');
+[% example("preferred") %]
 
 =head3 Parameters
 
@@ -212,8 +207,9 @@ The IPv6 address in the style detailed by L<RFC1924|/RFCs>.
 
 =head3 Notes
 
-Invalid input will generate an exception.
+Invalid input will generate an exception. 
 
+The base 85 encoding described in RFC1924 was an April Fool's joke.
 
 =head2 to_bigint
 
@@ -230,7 +226,6 @@ The BigInt representation of the given IPv6 address.
 
 Invalid input will generate an exception.
 
-
 =head2 to_array
 
 =head3 Parameters
@@ -240,12 +235,11 @@ an IPv6 address string in any format.
 
 =head3 Returns
 
-An array [0..7] of 16 bit hexadecimal numbers.
+An array [0..7] of 16-bit hexadecimal numbers (strings).
 
 =head3 Notes
 
 Invalid input will generate an exception.
-
 
 =head2 to_intarray
 
@@ -256,14 +250,11 @@ an IPv6 address string in any format.
 
 =head3 Returns
 
-An array [0..7] of decimal numbers.
+An array [0..7] of numbers.
 
 =head3 Notes
 
 Invalid input will generate an exception.
-
-This does not have any tests in the current test suite.
-
 
 =head2 to_string_ip6_int
 
@@ -279,7 +270,6 @@ The reverse-address pointer as defined by L<RFC1886|/RFCs>.
 =head3 Notes
 
 Invalid input will generate an exception.
-
 
 =head2 in_network_of_size
 
@@ -312,7 +302,7 @@ Network IPv6Addr of given size.
 Invalid input will generate an exception. 
 
 Prior to version 0.9, this did not work correctly unless the net size
-was a multiple of sixteen due to a misuse of "pack" syntax.
+was a multiple of sixteen.
 
 =head2 in_network
 
@@ -344,7 +334,7 @@ A true value if the address is a member of the network, false otherwise.
 Invalid input will generate an exception.
 
 Prior to version 0.9, this did not work correctly unless the net size
-was a multiple of sixteen due to a misuse of "pack" syntax.
+was a multiple of sixteen.
 
 =head1 EXPORTS
 
@@ -354,7 +344,6 @@ fully-qualified format, like C<Net::IPv6Addr::is_ipv6>. The exported
 functions may all be exported using
 
     use Net::IPv6Addr ':all';
-
 
 =head1 BUGS
 
@@ -374,7 +363,6 @@ Report further bugs at
 L<https://rt.cpan.org/Dist/Display.html?Name=Net-IPv6Addr> or by email
 to C<bug-Net-IPv6Addr [at] rt.cpan.org>.
 
-
 =head1 DEPENDENCIES
 
 L<Net::IPv4Addr>, L<Math::Base85>, L<Math::BigInt>
@@ -382,7 +370,6 @@ L<Net::IPv4Addr>, L<Math::Base85>, L<Math::BigInt>
 =head2 Reverse dependencies
 
 L<Search grep.cpan.me for uses of this module|http://grep.cpan.me/?q=Net%3A%3AIPv6Addr%5Cb>
-
 
 =head1 SEE ALSO
 
@@ -393,25 +380,42 @@ documentation) contain information on IPv6.
 
 L<RFC1884|https://www.ietf.org/rfc/rfc1884.txt>,
 L<RFC1886|https://www.ietf.org/rfc/rfc1886.txt>,
-L<RFC1924|https://www.ietf.org/rfc/rfc1924.txt>,
+L<RFC1924|https://www.ietf.org/rfc/rfc1924.txt> (April Fool's joke),
 L<RFC2373|https://www.ietf.org/rfc/rfc2373.txt>
 
 The links go to the plain text online versions of the RFCs.
 
 =head2 Other CPAN modules
 
+There are a very large number of CPAN modules which deal with IPv6
+addresses. The following list gives all the ones I know about which
+overlap with this module, in alphabetical order.
+
 =over
 
-=item L<Net::IPv6Address>
+=item L<Data::Checker::IP>
 
-=item L<IPv6::Address>
-
-=item L<Regexp::IPv6>
+=item L<Data::Validate::IP>
 
 =item L<IPTables::IPv6>
 
-=back
+=item L<IPv6::Address>
 
+=item L<Net::IP::Minimal>
+
+=item L<Net::IP>
+
+=item L<Net::IPAddress::Util>
+
+=item L<Net::IPv6Address>
+
+=item L<NetAddr::IP>
+
+=item L<NetAddr::IP::Lite>
+
+=item L<Regexp::IPv6>
+
+=back
 
 =head1 HISTORY
 
@@ -423,7 +427,6 @@ In 2017 the module was adopted by Ben Bullock with the help of Neil
 Bowers as part of "CPAN day".
 
 Exporting of some functions was added in version 0.8.
-
 
 =head1 AUTHOR
 
@@ -438,7 +441,6 @@ at sonera dot comE<gt>.
 (*) The current module maintainer does not have any contact
 information for Tony Monroe. Those wishing to contact him can do so
 via Neil Bowers (see his CPAN user page for contact details).
-
 
 =head1 LICENSE
 
