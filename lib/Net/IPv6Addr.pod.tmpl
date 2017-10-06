@@ -407,9 +407,12 @@ Uses L</NetAddr::IP>.
 
 =item L<Data::Validate::IP>
 
-Uses L<Socket> to validate IP addresses.
+Uses L<Socket> to validate IP addresses. Offers a number of facilities
+for special-purpose sub networks.
 
 =item L<IPv6::Address>
+
+Adds functions to manipulate addresses.
 
 =item L<Net::IP>
 
@@ -419,16 +422,18 @@ Uses L<Socket> to validate IP addresses.
 
 =item L<Net::IPv6Address>
 
+This module is broken and strongly not recommended.
+
 =item L<NetAddr::IP>
 
 =item L<NetAddr::IP::Lite>
 
 =item L<Regexp::IPv6>
 
-Tests and one regex from C<Regexp::IPv6> are included in this
-module. Unlike C<Net::IPv6Addr>, this module disallows the valid C<::>
-IP address, which means "the unspecified addresses". See the module's
-documentation for details.
+Consists of a regex for validating IPv6s. Tests and one regex from
+C<Regexp::IPv6> are included in this module. Unlike C<Net::IPv6Addr>,
+C<Regexp::IPv6> disallows C<::>, "the unspecified addresses". See the
+module's documentation for details.
 
 =back
 
