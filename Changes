@@ -1,5 +1,10 @@
 Revision history for Perl module Net::IPv6Addr
 
+0.91 2017-10-06	    Ben Bullock <bkb@cpan.org>
+
+	* Documentation (esp. SEE ALSO, BUGS)
+        * Better validation of IPv4 addresses in ipv6_chkip
+
 0.9 2017-09-30      Ben Bullock <bkb@cpan.org>
 
 	* in_network / in_network_of_size bug fix

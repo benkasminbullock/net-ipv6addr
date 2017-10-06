@@ -51,6 +51,9 @@ Too many pattern matches to describe in this margin.
 
 =head1 METHODS AND FUNCTIONS
 
+Several of the following serve as both object methods and standalone
+functions.
+
 =head2 new
 
     my $ni = Net::IPv6Addr->new ('dead:beef:cafe:babe::f0ad');
@@ -96,7 +99,6 @@ scalar context, the address and prefix are concatenated with "/".
 =head3 Notes
 
 Throws an exception on malformed input.
-
 
 =head2 is_ipv6
 
@@ -357,6 +359,12 @@ Many of the routines do not have any tests. This means that
 alterations to the code may have unintentionally altered the module's
 behaviour.
 
+=item Compressed + IPv4 are not accepted
+
+As of [% info.version %], the valid format consisting of a
+compressed-but-non-zero six-element IPv6 followed by an IPv4 is not
+accepted by the module. TODO tests are in F<t/Regexp-IPv6.t>.
+
 =back
 
 Report further bugs at
@@ -395,15 +403,17 @@ overlap with this module, in alphabetical order.
 
 =item L<Data::Checker::IP>
 
+Uses L</NetAddr::IP>.
+
 =item L<Data::Validate::IP>
 
-=item L<IPTables::IPv6>
+Uses L<Socket> to validate IP addresses.
 
 =item L<IPv6::Address>
 
-=item L<Net::IP::Minimal>
-
 =item L<Net::IP>
+
+=item L<Net::IP::Minimal>
 
 =item L<Net::IPAddress::Util>
 
@@ -414,6 +424,21 @@ overlap with this module, in alphabetical order.
 =item L<NetAddr::IP::Lite>
 
 =item L<Regexp::IPv6>
+
+Tests and one regex from C<Regexp::IPv6> are included in this
+module. Unlike C<Net::IPv6Addr>, this module disallows the valid C<::>
+IP address, which means "the unspecified addresses". See the module's
+documentation for details.
+
+=back
+
+=head2 Other
+
+=over
+
+=item Online validator
+
+L<https://www.helpsystems.com/intermapper/ipv6-test-address-validation>
 
 =back
 
@@ -428,6 +453,9 @@ Bowers as part of "CPAN day".
 
 Exporting of some functions was added in version 0.8.
 
+For version 0.91, IPv6 validating tests and an IPv4 validating regexp
+were taken from L<Regexp::IPv6> by Salvador Fandiño García.
+
 =head1 AUTHOR
 
 Tony Monroe(*)
@@ -438,7 +466,7 @@ J. Lacoste E<lt>francis dot lacoste at iNsu dot COME<gt>.
 Some fixes and subroutines from Jyrki Soini E<lt>jyrki dot soini
 at sonera dot comE<gt>.
 
-(*) The current module maintainer does not have any contact
+(*) The current module maintainer (BKB) does not have any contact
 information for Tony Monroe. Those wishing to contact him can do so
 via Neil Bowers (see his CPAN user page for contact details).
 
