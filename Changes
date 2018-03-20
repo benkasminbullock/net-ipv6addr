@@ -1,5 +1,9 @@
 Revision history for Perl module Net::IPv6Addr
 
+0.92 
+
+	* UTF-8 in Makefile.PL marked
+
 0.91 2017-10-06	    Ben Bullock <bkb@cpan.org>
 
 	* Documentation (esp. SEE ALSO, BUGS)

@@ -1,3 +1,4 @@
+use utf8;
 use ExtUtils::MakeMaker;
 my $pm = 'lib/Net/IPv6Addr.pm';
 my $github = 'github.com/benkasminbullock/net-ipv6addr';
