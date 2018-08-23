@@ -112,7 +112,7 @@ Identical to L</ipv6_parse>.
 
 This returns the return value of L</ipv6_parse>, called in scalar
 context, if it does parse out correctly, otherwise it returns
-C<undef>. Unlike L</ipv6_parse>, is_ipv6 does not throw exceptions.
+C<undef>. Unlike L</ipv6_parse>, C<is_ipv6> does not throw exceptions.
 
 =head2 ipv6_chkip
 
@@ -124,8 +124,7 @@ An IPv6 address string, without a prefix.
 
 =head3 Returns
 
-Something true if it's a valid address; something false otherwise.
-
+A true value if it's a valid address; a false value if not.
 
 =head2 to_string_preferred
 
@@ -160,7 +159,6 @@ The IPv6 address in the "compressed" format detailed by L<RFC1884|/RFCs>.
 
 Invalid input will generate an exception.
 
-
 =head2 to_string_ipv4
 
 =head3 Parameters
@@ -174,9 +172,8 @@ The IPv6 address in the IPv4 format detailed by L<RFC1884|/RFCs>.
 
 =head3 Notes
 
-Invalid input (such as an address that was not originally IPv4)
+Invalid input, such as an address that was not originally IPv4,
 will generate an exception.
-
 
 =head2 to_string_ipv4_compressed
 
@@ -194,7 +191,6 @@ L<RFC1884|/RFCs>.
 
 Invalid input (such as an address that was not originally IPv4)
 will generate an exception.
-
 
 =head2 to_string_base85
 
