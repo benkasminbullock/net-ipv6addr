@@ -51,7 +51,11 @@ sub clean
     if (-f "$Bin/Makefile") {
 	system ("make clean") == 0 or warn "Make clean failed";
     }
-    for my $badfile (qw/Makefile.old MANIFEST.bak/) {
+    my @exout = <examples/*-out.txt>;
+    for my $badfile (qw!Makefile.old
+			MANIFEST.bak
+			lib/Net/IPv6Addr.pod
+		       !, @exout) {
 	my $fullfile = "$Bin/$badfile";
 	if (-f $fullfile) {
 	    unlink $fullfile or warn "Could not rm $fullfile: $!";
