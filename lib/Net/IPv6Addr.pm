@@ -22,7 +22,7 @@ our @EXPORT_OK = qw(
 		       to_string_ipv4_compressed
 	       );
 our %EXPORT_TAGS = (all => \@EXPORT_OK);
-our $VERSION = '0.92';
+our $VERSION = '0.93';
 
 use Carp;
 use Net::IPv4Addr;

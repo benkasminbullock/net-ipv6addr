@@ -32,6 +32,7 @@ else {
     system ("perl $Bin/make-pod.pl") == 0 or warn "make-pod.pl failed: $!";
     system ("perl Makefile.PL;make;make test") == 0 or die "make failed";
     if ($dist) {
+	system ("makereadme > README") == 0 or die;
 	system ("make manifest;make dist") == 0 or die;
     }
     if ($install) {
@@ -54,6 +55,7 @@ sub clean
     my @exout = <examples/*-out.txt>;
     for my $badfile (qw!Makefile.old
 			MANIFEST.bak
+			MANIFEST
 			lib/Net/IPv6Addr.pod
 		       !, @exout) {
 	my $fullfile = "$Bin/$badfile";
