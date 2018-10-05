@@ -1,4 +1,7 @@
 #!/usr/bin/env perl
+
+# Fake build script which does not use Perl::Build (my one).
+
 use warnings;
 use strict;
 use FindBin '$Bin';
@@ -22,12 +25,12 @@ if ($clean) {
 }
 elsif ($all) {
     clean ();
-    system ("git add .;git commit -a") == 0 or die "Git commit failed";
+    system ("cd $Bin;git add .;git commit -a") == 0 or die "Git commit failed";
     exit;
 }
 else {
-    system ("perl $Bin/make-pod.pl") == 0 or die $!;
-    system ("perl Makefile.PL;make;make test") == 0 or die;
+    system ("perl $Bin/make-pod.pl") == 0 or warn "make-pod.pl failed: $!";
+    system ("perl Makefile.PL;make;make test") == 0 or die "make failed";
     if ($dist) {
 	system ("make manifest;make dist") == 0 or die;
     }

@@ -146,6 +146,8 @@ Invalid input will generate an exception.
 
 =head2 to_string_compressed
 
+[% example("compressed") %]
+
 =head3 Parameters
 
 If used as an object method, none; if used as a subroutine,
@@ -211,6 +213,11 @@ The base 85 encoding described in RFC1924 was an April Fool's joke.
 
 =head2 to_bigint
 
+[% example("bigint") %]
+
+Convert an IPv6 address into a L<Math::Bigint> object containing the
+IP address as a single number.
+
 =head3 Parameters
 
 If used as an object method, none; if used as a subroutine,
@@ -224,7 +231,13 @@ The BigInt representation of the given IPv6 address.
 
 Invalid input will generate an exception.
 
+See also L</to_intarray> and L</to_array>.
+
 =head2 to_array
+
+[% example("array") %]
+
+Convert an IPv6 address into an array of eight hexadecimal numbers.
 
 =head3 Parameters
 
@@ -239,7 +252,13 @@ An array [0..7] of 16-bit hexadecimal numbers (strings).
 
 Invalid input will generate an exception.
 
+See also L</to_intarray> and L</to_bigint>.
+
 =head2 to_intarray
+
+[% example("array") %]
+
+Convert an IPv6 address into an array of eight integer numbers.
 
 =head3 Parameters
 
@@ -254,7 +273,11 @@ An array [0..7] of numbers.
 
 Invalid input will generate an exception.
 
+See also L</to_array> and L</to_bigint>.
+
 =head2 to_string_ip6_int
+
+[% example("string-ip6-int") %]
 
 =head3 Parameters
 
@@ -337,9 +360,8 @@ was a multiple of sixteen.
 =head1 EXPORTS
 
 As of version [% info.version %], L</[% exports.join('>, L</') %]> may
-be exported on demand. The other routines need to be called in
-fully-qualified format, like C<Net::IPv6Addr::is_ipv6>. The exported
-functions may all be exported using
+be exported on demand. All the exported functions may be exported
+using
 
     use Net::IPv6Addr ':all';
 
@@ -355,12 +377,6 @@ Many of the routines do not have any tests. This means that
 alterations to the code may have unintentionally altered the module's
 behaviour.
 
-=item Compressed + IPv4 are not accepted
-
-As of [% info.version %], the valid format consisting of a
-compressed-but-non-zero six-element IPv6 followed by an IPv4 is not
-accepted by the module. TODO tests are in F<t/Regexp-IPv6.t>.
-
 =back
 
 Report further bugs at
@@ -369,7 +385,20 @@ to C<bug-Net-IPv6Addr [at] rt.cpan.org>.
 
 =head1 DEPENDENCIES
 
-L<Net::IPv4Addr>, L<Math::Base85>, L<Math::BigInt>
+=over
+
+=item L<Net::IPv4Addr>
+
+This is used to parse IPv4 addresses.
+
+=item L<Math::Base85>
+
+This is used to parse RFC1924 (April Fool's) addresses.
+
+=item L<Math::BigInt>
+
+This is used by the RFC1924 (April Fool's) address routines and by
+L</to_bigint>.
 
 =head2 Reverse dependencies
 
@@ -456,6 +485,10 @@ Exporting of some functions was added in version 0.8.
 
 For version 0.91, IPv6 validating tests and an IPv4 validating regexp
 were taken from L<Regexp::IPv6> by Salvador Fandiño García.
+
+From version 0.92, the valid format consisting of a
+compressed-but-non-zero six-element IPv6 followed by an IPv4, such as
+C<fe80::204:61ff:254.157.241.86>, is accepted by the module. 
 
 =head1 AUTHOR
 
