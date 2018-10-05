@@ -17,7 +17,7 @@ our @EXPORT_OK = qw(
 		       to_intarray
 		       to_array
 		       to_string_ip6_int
-		       to_string_base65
+		       to_string_base85
 		       to_string_ipv4
 		       to_string_ipv4_compressed
 	       );

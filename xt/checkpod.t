@@ -12,7 +12,7 @@ binmode STDERR, ":encoding(utf8)";
 use Perl::Build::Pod qw/pod_checker pod_link_checker/;
 use Perl::Build 'get_info';
 my $info = get_info (base => "$Bin/../");
-my $filepath = $info->{pm};
+my $filepath = $info->{pod};
 my $errors = pod_checker ($filepath);
 ok (@$errors == 0, "No errors");
 if (@$errors > 0) {
