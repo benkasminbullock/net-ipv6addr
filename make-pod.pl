@@ -33,10 +33,12 @@ my $output = "$Bin/lib/Net/$pod";
 
 # Template toolkit variable holder
 
+my @exports = sort @Net::IPv6Addr::EXPORT_OK;
+
 my %vars = (
     info => $info,
     commit => $commit,
-    exports => \@Net::IPv6Addr::EXPORT_OK,
+    exports => \@exports,
 );
 
 my $tt = Template->new (
@@ -71,6 +73,8 @@ my %ex;
 $ex{pref} = $ex->to_string_preferred ();
 $ex{comp} = $ex->to_string_compressed ();
 $ex{fool} = $ex->to_string_base85 ();
+$ex{ipv64} = $ex->to_string_ipv4 ();
+$ex{ipv64c} = $ex->to_string_ipv4_compressed ();
 $vars{ex} = \%ex;
 chmod 0644, $output;
 $tt->process ($input, \%vars, $output, binmode => 'utf8')

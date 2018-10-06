@@ -1,5 +1,7 @@
-# This tests the module's compliance with RFC 5952. No alterations to
-# the module were necessary, since it already complied with the
+# This tests the module's compliance with RFC 5952. The tests here are
+# directly copy-pasted from the document itself. See
+# https://tools.ietf.org/rfc/rfc5952.txt.  No alterations to the
+# module were necessary, since it already complied with the
 # requirements described.
 
 use warnings;
@@ -15,7 +17,6 @@ binmode STDOUT, ":encoding(utf8)";
 binmode STDERR, ":encoding(utf8)";
 use Net::IPv6Addr ':all';
 
-# See https://tools.ietf.org/rfc/rfc5952.txt
 
 my @same = qw!
 

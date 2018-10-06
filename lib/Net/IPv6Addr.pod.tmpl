@@ -13,7 +13,7 @@ produces output
 
 =head1 NAME
 
-Net::IPv6Addr - Check validity of IPv6 addresses
+Net::IPv6Addr - Check and manipulate IPv6 addresses
 
 =head1 VERSION
 
@@ -27,9 +27,11 @@ commit.commit %]> released on [% commit.date %].
 
 =head1 DESCRIPTION
 
-C<Net::IPv6Addr> checks strings for valid IPv6 addresses, as specified
-in L</RFC1884> et al, and converts addresses into various formats. It
-is able to process addresses formatted in the following styles:
+C<Net::IPv6Addr> can check whether strings contain valid IPv6
+addresses, and convert them into various formats.
+
+All of L</new>, L</is_ipv6>, and L</ipv6_parse> can
+process the following formats:
 
 =over
 
@@ -37,32 +39,65 @@ is able to process addresses formatted in the following styles:
 
 C<[% ex.pref %]>
 
-=item Compressed form with double colon
+This is the form described as the "preferred form" in section 2.2 of
+L</RFC1884> et al. Output with L</to_string_preferred>.
+
+=item Compressed form with double colon: x::x etc.
 
 C<[% ex.comp %]>
 
 This is the "canonical text representation format" of L</RFC5952>.
+Output with L</to_string_compressed>.
 
 =item	Mixed IPv4/IPv6 format: x:x:x:x:x:x:d.d.d.d
 
-C<2001:db8:0:0:0:ff00:1.2.3.4>
+C<[% ex.ipv64 %]>
 
-=item	Mixed IPv4/IPv6 with compression: ::d.d.d.d or ::FFFF:d.d.d.d
+Output with L</to_string_ipv4>.
 
-C<::1.2.3.4>
+=item	Mixed IPv4/IPv6 with compression: x::x:d.d.d.d, etc.
+
+C<[% ex.ipv64c %]>
+
+Output with L</to_string_ipv4_compressed>.
 
 =item	Base-85-encoded: [0-9A-Za-z!#$%&()*+;<=>?@^_`{|}~-]{20}
 
 C<[% ex.fool %]>
 
-This encoding was given in L</RFC1924> as an April Fool's joke.
+This encoding was given in L</RFC1924> as an April Fool's joke. Output
+with L</to_string_base85>.
 
 =back
 
+In addition, the following formats can be output:
+
+=over
+
+=item Big integers
+
+An IPv6 can be changed to a L<Math::BigInt> object or a digit string
+using L</to_bigint>. Big integers can also be input with
+L</from_bigint>.
+
+=item Arrays
+
+An IPv6 can be processed into its component pieces with L</to_array>
+or L</to_intarray>.
+
+=item Reverse-address pointer
+
+An IPv6 can be processed into its reverse-address pointer, as defined
+by L</RFC1886>, using L</to_string_ip6_int>.
+
+=back
+
+
+
 =head1 METHODS AND FUNCTIONS
 
-Several of the following serve as both object methods and standalone
-functions.
+All of the following except L</new> serve as both object methods and
+standalone functions.
 
 =head2 new
 
@@ -182,6 +217,8 @@ Invalid input will generate an exception.
 
 =head2 to_string_ipv4
 
+[% example("to-string-ipv4") %]
+
 =head3 Parameters
 
 If used as an object method, none; if used as a subroutine,
@@ -193,10 +230,14 @@ The IPv6 address in the IPv4 format detailed by L</RFC1884> et al.
 
 =head3 Notes
 
-Invalid input, such as an address that was not originally IPv4,
-will generate an exception.
+When used as a subroutine, invalid input will generate an exception.
+
+From version L</0.95>, this allows any IPv6 address to be produced, not
+just the restricted forms allowed previously.
 
 =head2 to_string_ipv4_compressed
+
+[% example("to-string-ipv4-comp") %]
 
 =head3 Parameters
 
@@ -210,8 +251,10 @@ L</RFC1884> et al.
 
 =head3 Notes
 
-Invalid input (such as an address that was not originally IPv4)
-will generate an exception.
+When used as a subroutine, invalid input will generate an exception.
+
+From version L</0.95>, this allows any IPv6 address to be produced,
+not just the restricted forms allowed previously.
 
 =head2 to_string_base85
 
@@ -228,13 +271,14 @@ The IPv6 address in the style detailed by L</RFC1924>.
 
 Invalid input will generate an exception. 
 
-The base 85 encoding described in RFC1924 was an April Fool's joke.
+The base 85 encoding described in L</RFC1924> was an April Fool's
+joke.
 
 =head2 to_bigint
 
 [% example("bigint") %]
 
-Convert an IPv6 address into a L<Math::Bigint> object containing the
+Convert an IPv6 address into a L<Math::BigInt> object containing the
 IP address as a single number.
 
 =head3 Parameters
@@ -311,42 +355,45 @@ The reverse-address pointer as defined by L</RFC1886>.
 
 Invalid input will generate an exception.
 
+The reverse process of converting these into Net::IPv6Addr objects is
+not supported.
+
 =head2 in_network_of_size
 
-    my $obj = $x->in_network_of_size ($n);
+[% example("inos") %]
 
 Given an input IPv6 address $x, this returns the C<$n>
 most-significant bits of C<$x> as a new Net::IPv6Addr object.
 
 =head3 Parameters
 
-If used as an object method, network size in bits
+If used as an object method, network size in bits:
 
     my $obj = $x->in_network_of_size (64);
 
-If used as a subroutine, an IPv6 address string in any format
-and network size in bits.
+If used as a subroutine, an IPv6 address string in any format and a
+network size in bits:
 
-    my $obj = Net::IPv6::in_network_of_size ($addr, 64);
+    my $obj = in_network_of_size ($addr, 64);
 
-Network size may be given with / notation:
+Network size may also be given with C</> notation:
 
-    my $obj = Net::IPv6::in_network_of_size ("$addr/64");
+    my $obj = in_network_of_size ("$addr/64");
 
 =head3 Returns
 
-Network IPv6Addr of given size.
+The C<$n> most-significant bits of C<$x> as a new Net::IPv6Addr object.
 
 =head3 Notes
 
 Invalid input will generate an exception. 
 
-Prior to version 0.9, this did not work correctly unless the net size
-was a multiple of sixteen.
+Prior to version L</0.9>, this did not work correctly unless the net
+size was a multiple of sixteen.
 
 =head2 in_network
 
-    my $ok = $x->in_network ("aa:bb:cc:dd::/64");
+[% example("inet") %]
 
 =head3 Parameters
 
@@ -367,16 +414,19 @@ network address string:
 
 =head3 Returns
 
-A true value if the address is a member of the network, false otherwise.
+A true value if the address C<$x> is a member of the network given as
+the argument, or false otherwise.
 
 =head3 Notes
 
 Invalid input will generate an exception.
 
-Prior to version 0.9, this did not work correctly unless the net size
-was a multiple of sixteen.
+Prior to version L</0.9>, this did not work correctly unless the net
+size was a multiple of sixteen.
 
 =head2 from_bigint
+
+[% example("from-bigint") %]
 
 Given a string or a L<Math::BigInt> object containing a number, this
 converts it into a Net::IPv6Addr object.
@@ -394,7 +444,7 @@ A Net::IPv6Addr object
 
 Invalid input will generate an exception.
 
-
+This function was added in L</0.95>.
 
 =head1 EXPORTS
 
@@ -414,11 +464,11 @@ This is used to parse IPv4 addresses.
 
 =item L<Math::Base85>
 
-This is used to parse RFC1924 (April Fool's) addresses.
+This is used to parse L</RFC1924> (April Fool's) addresses.
 
 =item L<Math::BigInt>
 
-This is used by the RFC1924 (April Fool's) address routines and by
+This is used by the L</RFC1924> (April Fool's) address routines and by
 L</to_bigint> and L</from_bigint>.
 
 =back
@@ -481,6 +531,10 @@ This was an April Fool's joke.
 
 I<A Recommendation for IPv6 Address Text Representation> - August 2010
 
+This contains a "recommendation for a canonical text representation
+format of IPv6 addresses" which corresponds to the output of
+L</to_string_compressed> in this module.
+
 =back
 
 The links go to the plain text online versions of the RFCs.
@@ -493,24 +547,37 @@ overlap with this module, in alphabetical order.
 
 =over
 
-=item L<Data::Checker::IP>
-
-Uses L</NetAddr::IP>.
-
 =item L<Data::Validate::IP>
 
-Uses L<Socket> to validate IP addresses. Offers a number of facilities
-for special-purpose sub networks.
+This module uses L<Socket> to validate IP addresses. It offers a
+number of facilities for special-purpose sub networks, like
+C<is_discard_ipv6>, which are not offered in Net::IPv6Addr.
 
 =item L<IPv6::Address>
 
-Adds functions to manipulate addresses.
+Its description says "A pure Perl IPv6 address manipulation
+library. Emphasis on manipulation of prefixes and addresses."
+
+It insists on having a prefix with the IP address, so
+
+    my $ipv6 = IPv6::Address->new ('2001:0:0:1:0:0:0:1');
+
+actually fails, you have to use
+
+    my $ipv6 = IPv6::Address->new ('2001:0:0:1:0:0:0:1/64');
 
 =item L<Net::IP>
 
+Features binary IPs (strings like '101001'), etc.
+
 =item L<Net::IP::Minimal>
 
+It's a simplified version of L</Net::IP>.
+
 =item L<Net::IPAddress::Util>
+
+It's a "Version-agnostic representation of an IP address". I have not
+tried this module.
 
 =item L<Net::IPv6Address>
 
@@ -520,10 +587,17 @@ This module is broken and strongly not recommended.
 
 =item L<NetAddr::IP::Lite>
 
+These are two things in the same distribution. The documentation is
+quite offputting, but there are a lot of users of the module and stars
+on metacpan.
+
 =item L<Regexp::IPv6>
 
-Consists of a regex for validating IPv6s. Tests and one regex from
-C<Regexp::IPv6> are included in this module. Unlike C<Net::IPv6Addr>,
+This module consists of a regex for validating IPv6s. Because this
+module had a lot more and better tests than Net::IPv6Addr, I included
+the tests and one regex from C<Regexp::IPv6> in this module. (See
+L<F<t/Regexp-IPv6.t>|https://fastapi.metacpan.org/source/BKB/Net-IPv6Addr-[%
+info.version %]/t/Regexp-IPv6.t>) Unlike C<Net::IPv6Addr>,
 C<Regexp::IPv6> disallows C<::>, "the unspecified addresses". See the
 module's documentation for details.
 
@@ -546,19 +620,38 @@ the task of maintaining DNS records after he set himself up with
 Freenet6.
 
 In 2017 the module was adopted by Ben Bullock with the help of Neil
-Bowers as part of "CPAN day".
+Bowers as part of "CPAN day". Significant changes to the module since
+then include the following:
 
-Exporting of some functions was added in version 0.8.
+=over
 
-For version 0.91, IPv6 validating tests and an IPv4 validating regexp
-were taken from L<Regexp::IPv6> by Salvador Fandiño García.
+=item 0.8
 
-From version 0.92, the valid format consisting of a
-compressed-but-non-zero six-element IPv6 followed by an IPv4, such as
-C<fe80::204:61ff:254.157.241.86>, is accepted by the module. 
+Exporting of some functions was added. Prior to this, everything had
+to be done fully-qualified, as in
+C<Net::IPv6Addr::to_string_compressed>.
 
-From version 0.95, the L</from_bigint> method was added and the
-documentation updated to reflect the current internet standards.
+=item 0.9
+
+L</in_network> and L</in_network_of_size> were fixed to allow more
+kinds of previxes.
+
+=item 0.92
+
+The valid format consisting of a compressed-but-non-zero six-element
+IPv6 followed by an IPv4, such as C<fe80::204:61ff:254.157.241.86>, is
+accepted by the module.
+
+=item 0.95
+
+The L</from_bigint> method was added and the documentation updated to
+reflect the current internet standards. 
+
+The restriction on mixed address inputs removed in L</0.92> was also
+removed in the output routines L</to_string_ipv4> and
+L</to_string_ipv4_compressed>.
+
+=back
 
 =head1 AUTHOR
 

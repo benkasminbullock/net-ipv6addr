@@ -23,7 +23,7 @@ our @EXPORT_OK = qw(
 		       from_bigint
 	       );
 our %EXPORT_TAGS = (all => \@EXPORT_OK);
-our $VERSION = '0.94';
+our $VERSION = '0.95';
 
 use Carp;
 use Net::IPv4Addr;
@@ -378,7 +378,7 @@ sub to_string_preferred
     if (ref $self ne __PACKAGE__) {
 	$self = Net::IPv6Addr->new ($self);
     }
-    return join(":", map { sprintf("%x", $_) } @$self);
+    return v6part (@$self);
 }
 
 
@@ -388,7 +388,7 @@ sub to_string_compressed
     if (ref $self ne __PACKAGE__) {
 	$self = Net::IPv6Addr->new ($self);
     }
-    my $expanded = join(":", map { sprintf("%x", $_) } @$self);
+    my $expanded = v6part (@$self);
     $expanded =~ s/^0:/:/;
     $expanded =~ s/:0/:/g;
     if ($expanded =~ s/:::::::/_/ or
@@ -406,6 +406,24 @@ sub to_string_compressed
     return $expanded;
 }
 
+sub bytes
+{
+    my ($in) = @_;
+    my $low = $in & 0xff;
+    my $high = $in >> 8;
+    return ($high, $low);
+}
+
+sub v4part
+{
+    my ($t, $b) = @_;
+    return join('.', bytes ($t), bytes ($b));
+}
+
+sub v6part
+{
+    return join(':', map { sprintf("%x", $_) } @_);
+}
 
 sub to_string_ipv4
 {
@@ -413,14 +431,8 @@ sub to_string_ipv4
     if (ref $self ne __PACKAGE__) {
 	$self = Net::IPv6Addr->new ($self);
     }
-    if ($self->[0] | $self->[1] | $self->[2] | $self->[3] | $self->[4]) {
-	mycroak "not originally an IPv4 address";
-    }
-    if (($self->[5] != 0xffff) && $self->[5]) {
-	mycroak "not originally an IPv4 address";
-    }
-    my $v6part = join(':', map { sprintf("%x", $_) } @$self[0..5]);
-    my $v4part = join('.', $self->[6] >> 8, $self->[6] & 0xff, $self->[7] >> 8,  $self->[7] & 0xff);
+    my $v6part = v6part (@$self[0..5]);
+    my $v4part = v4part (@$self[6, 7]);
     return "$v6part:$v4part";
 }
 
@@ -431,21 +443,11 @@ sub to_string_ipv4_compressed
     if (ref $self ne __PACKAGE__) {
 	$self = Net::IPv6Addr->new ($self);
     }
-    if ($self->[0] | $self->[1] | $self->[2] | $self->[3] | $self->[4]) {
-	mycroak "not originally an IPv4 address";
-    }
-    if (($self->[5] != 0xffff) && $self->[5]) {
-	mycroak "not originally an IPv4 address";
-    }
-    my $v6part;
-    if ($self->[5]) {
-	$v6part = sprintf("::%x", $self->[5]);
-    }
-    else {
-	$v6part = ":";
-    }
-    my $v4part = join('.', $self->[6] >> 8, $self->[6] & 0xff, $self->[7] >> 8,  $self->[7] & 0xff);
-    return "$v6part:$v4part";
+    my $v6part = v6part (@$self[0..5]);
+    $v6part .= ':';
+    $v6part =~ s/(^|:)(0:)+/::/;
+    my $v4part = v4part (@$self[6, 7]);
+    return "$v6part$v4part";
 }
 
 
