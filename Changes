@@ -1,5 +1,8 @@
 Revision history for Perl module Net::IPv6Addr
 
+0.96 2018-10-06
+	* Requirement on Math::BigInt changed to add version
+
 0.95 2018-10-06
 	* "from_bigint" method added
 	* Documentation updated to reflect the current RFCs

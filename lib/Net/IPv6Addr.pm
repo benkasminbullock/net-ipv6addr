@@ -23,11 +23,11 @@ our @EXPORT_OK = qw(
 		       from_bigint
 	       );
 our %EXPORT_TAGS = (all => \@EXPORT_OK);
-our $VERSION = '0.95';
+our $VERSION = '0.96';
 
 use Carp;
 use Net::IPv4Addr;
-use Math::BigInt;
+use Math::BigInt '1.999813';
 use Math::Base85;
 
 #  ____       _   _                      
