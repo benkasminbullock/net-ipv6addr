@@ -20,6 +20,7 @@ our @EXPORT_OK = qw(
 		       to_string_base85
 		       to_string_ipv4
 		       to_string_ipv4_compressed
+		       from_bigint
 	       );
 our %EXPORT_TAGS = (all => \@EXPORT_OK);
 our $VERSION = '0.94';
@@ -587,6 +588,34 @@ sub in_network
 	}
     }
     return 1;
+}
+
+sub from_bigint
+{
+    my ($big) = @_;
+    # Input is a scalar or a Math::BigInt object.
+    if (! ref ($big)) {
+	$big = Math::BigInt->new ($big);
+    }
+    if (ref ($big) ne 'Math::BigInt') {
+	mycroak "Cannot process non-scalar, non-Math::BigInt input";
+    }
+    # Convert the number to a hexadecimal string
+    my $hex = $big->to_hex ();
+    # Pad if necessary for the colon placement
+    if (length ($hex) < 32) {
+	my $leading = '0' x (32 - length ($hex));
+	$hex = $leading . $hex;
+    }
+    # Reversing the string makes adding colons with a substitution
+    # operator easier.
+    my $ipr = reverse $hex;
+    $ipr =~ s/(....)/$1:/g;
+    $ipr = reverse $ipr;
+    # Remove the excess colon.
+    $ipr =~ s/^://;
+    # Should be OK now, let "new" handle any further issues.
+    return Net::IPv6Addr->new ($ipr);
 }
 
 1;

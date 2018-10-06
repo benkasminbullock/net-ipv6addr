@@ -28,24 +28,34 @@ commit.commit %]> released on [% commit.date %].
 =head1 DESCRIPTION
 
 C<Net::IPv6Addr> checks strings for valid IPv6 addresses, as specified
-in L<RFC1884|/RFCs>, and converts addresses into various formats. It
-is able to process addresses formatted in the following styles;
+in L</RFC1884> et al, and converts addresses into various formats. It
+is able to process addresses formatted in the following styles:
 
 =over
 
-=item preferred form: x:x:x:x:x:x:x:x
+=item Preferred form: x:x:x:x:x:x:x:x
 
-=item zero-compressed form: the infamous double-colon.  
+C<[% ex.pref %]>
 
-Too many pattern matches to describe in this margin.
+=item Compressed form with double colon
 
-=item	mixed IPv4/IPv6 format: x:x:x:x:x:x:d.d.d.d
+C<[% ex.comp %]>
 
-=item	mixed IPv4/IPv6 with compression: ::d.d.d.d or ::FFFF:d.d.d.d
+This is the "canonical text representation format" of L</RFC5952>.
 
-=item	base-85-encoded: [0-9A-Za-z!#$%&()*+;<=>?@^_`{|}~-]{20}
+=item	Mixed IPv4/IPv6 format: x:x:x:x:x:x:d.d.d.d
 
-(This encoding was given in L<RFC1924|/RFCs> as an April Fool's joke.)
+C<2001:db8:0:0:0:ff00:1.2.3.4>
+
+=item	Mixed IPv4/IPv6 with compression: ::d.d.d.d or ::FFFF:d.d.d.d
+
+C<::1.2.3.4>
+
+=item	Base-85-encoded: [0-9A-Za-z!#$%&()*+;<=>?@^_`{|}~-]{20}
+
+C<[% ex.fool %]>
+
+This encoding was given in L</RFC1924> as an April Fool's joke.
 
 =back
 
@@ -138,7 +148,7 @@ an IPv6 address string in any format.
 =head3 Returns
 
 The IPv6 address, formatted in the "preferred" way (as detailed by
-RFC1884).
+L</RFC1884> et al).
 
 =head3 Notes
 
@@ -148,6 +158,9 @@ Invalid input will generate an exception.
 
 [% example("compressed") %]
 
+This provides the "canonical text representation format" of
+L</RFC5952>. 
+
 =head3 Parameters
 
 If used as an object method, none; if used as a subroutine,
@@ -155,7 +168,13 @@ an IPv6 address string in any format.
 
 =head3 Returns
 
-The IPv6 address in the "compressed" format detailed by L<RFC1884|/RFCs>.
+The IPv6 address in the "compressed" (L</RFC1884> et al.) or
+"canonical" (L</RFC5952>) format. Hexadecimal numbers are reduced to
+lower case, consecutive zero elements are reduced to double colons,
+and leading zeros are removed from strings of hexadecimal digits. All
+treatment of ambiguities is as per RFC5952. (See
+L<F<t/rfc5952.t>|https://fastapi.metacpan.org/source/BKB/Net-IPv6Addr-[%
+info.version %]/t/rfc5952.t> for tests.)
 
 =head3 Notes
 
@@ -170,7 +189,7 @@ an IPv6 address string in any format.
 
 =head3 Returns
 
-The IPv6 address in the IPv4 format detailed by L<RFC1884|/RFCs>.
+The IPv6 address in the IPv4 format detailed by L</RFC1884> et al.
 
 =head3 Notes
 
@@ -187,7 +206,7 @@ an IPv6 address string in any format.
 =head3 Returns
 
 The IPv6 address in the compressed IPv4 format detailed by
-L<RFC1884|/RFCs>.
+L</RFC1884> et al.
 
 =head3 Notes
 
@@ -203,7 +222,7 @@ an IPv6 address string in any format.
 
 =head3 Returns
 
-The IPv6 address in the style detailed by L<RFC1924|/RFCs>.
+The IPv6 address in the style detailed by L</RFC1924>.
 
 =head3 Notes
 
@@ -231,7 +250,7 @@ The BigInt representation of the given IPv6 address.
 
 Invalid input will generate an exception.
 
-See also L</to_intarray> and L</to_array>.
+See also L</from_bigint>, L</to_intarray> and L</to_array>.
 
 =head2 to_array
 
@@ -286,7 +305,7 @@ an IPv6 address string in any format.
 
 =head3 Returns
 
-The reverse-address pointer as defined by L<RFC1886|/RFCs>.
+The reverse-address pointer as defined by L</RFC1886>.
 
 =head3 Notes
 
@@ -357,6 +376,26 @@ Invalid input will generate an exception.
 Prior to version 0.9, this did not work correctly unless the net size
 was a multiple of sixteen.
 
+=head2 from_bigint
+
+Given a string or a L<Math::BigInt> object containing a number, this
+converts it into a Net::IPv6Addr object.
+
+=head3 Parameters
+
+A string or a Math::BigInt object. If the input is a scalar, it's
+converted into a Math::BigInt object.
+
+=head3 Returns
+
+A Net::IPv6Addr object
+
+=head3 Notes
+
+Invalid input will generate an exception.
+
+
+
 =head1 EXPORTS
 
 As of version [% info.version %], L</[% exports.join('>, L</') %]> may
@@ -380,7 +419,7 @@ This is used to parse RFC1924 (April Fool's) addresses.
 =item L<Math::BigInt>
 
 This is used by the RFC1924 (April Fool's) address routines and by
-L</to_bigint>.
+L</to_bigint> and L</from_bigint>.
 
 =back
 
@@ -395,10 +434,54 @@ L<Search grep.cpan.me for uses of this module|http://grep.cpan.me/?q=Net%3A%3AIP
 The following RFCs (requests for comment, internet standards
 documentation) contain information on IPv6.
 
-L<RFC1884|https://www.ietf.org/rfc/rfc1884.txt>,
-L<RFC1886|https://www.ietf.org/rfc/rfc1886.txt>,
-L<RFC1924|https://www.ietf.org/rfc/rfc1924.txt> (April Fool's joke),
-L<RFC2373|https://www.ietf.org/rfc/rfc2373.txt>
+[% MACRO rfc(x) BLOCK -%]
+L<RFC[% x %]|https://www.rfc-editor.org/rfc/rfc[% x %].txt>
+[%- END %]
+
+=head3 Addressing Architecture series
+
+These are all the same standard, with updates. The most recent one is
+the active one.
+
+=over
+
+=item [% rfc(1884) %]
+
+I<IPv6 Addressing Architecture> - December 1995
+
+=item [% rfc(2373) %]
+
+I<IP Version 6 Addressing Architecture> - July 1998
+
+=item [% rfc(3513) %]
+
+I<Internet Protocol Version 6 (IPv6) Addressing Architecture> - April 2003
+
+=item [% rfc(4291) %]
+
+I<IP Version 6 Addressing Architecture> - February 2006
+
+=back
+
+=head3 Other
+
+=over
+
+=item [% rfc(1886) %]
+
+I<DNS Extensions to support IP version 6> - December 1995
+
+=item [% rfc(1924) %]
+
+I<A Compact Representation of IPv6 Addresses> - 1 April 1996
+
+This was an April Fool's joke.
+
+=item [% rfc(5952) %]
+
+I<A Recommendation for IPv6 Address Text Representation> - August 2010
+
+=back
 
 The links go to the plain text online versions of the RFCs.
 
@@ -474,6 +557,9 @@ From version 0.92, the valid format consisting of a
 compressed-but-non-zero six-element IPv6 followed by an IPv4, such as
 C<fe80::204:61ff:254.157.241.86>, is accepted by the module. 
 
+From version 0.95, the L</from_bigint> method was added and the
+documentation updated to reflect the current internet standards.
+
 =head1 AUTHOR
 
 Tony Monroe(*)
@@ -486,7 +572,8 @@ at sonera dot comE<gt>.
 
 (*) The current module maintainer (BKB) does not have any contact
 information for Tony Monroe. Those wishing to contact him can do so
-via Neil Bowers (see his CPAN user page for contact details).
+via Neil Bowers (see L<his CPAN user page for contact
+details|https://metacpan.org/author/NEILB>).
 
 =head1 LICENSE
 

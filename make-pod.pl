@@ -10,7 +10,7 @@ use Getopt::Long;
 BEGIN: {
     use lib "$Bin/lib";
 };
-use Net::IPv6Addr;
+use Net::IPv6Addr ':all';
 my $ok = GetOptions (
     'force' => \my $force,
     'verbose' => \my $verbose,
@@ -65,6 +65,13 @@ for my $example (@examples) {
     }
 }
 
+my $ex = Net::IPv6Addr->new ('2001:db8::ff00:42:8329');
+
+my %ex;
+$ex{pref} = $ex->to_string_preferred ();
+$ex{comp} = $ex->to_string_compressed ();
+$ex{fool} = $ex->to_string_base85 ();
+$vars{ex} = \%ex;
 chmod 0644, $output;
 $tt->process ($input, \%vars, $output, binmode => 'utf8')
     or die '' . $tt->error ();

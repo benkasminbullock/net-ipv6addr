@@ -1,5 +1,10 @@
 Revision history for Perl module Net::IPv6Addr
 
+0.95
+	* from_bigint method added
+	* Documentation updated to reflect the current RFCs
+	* Tests of to_bigint, rfc compliance.
+
 0.94 2018-10-06     Ben Bullock <bkb@cpan.org>
 	* Pod error fixed
 	* EXPORTS_OK corrected

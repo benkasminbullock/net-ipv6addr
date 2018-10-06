@@ -1,18 +1,20 @@
-# These tests of IPv6 addresses were poached from Regexp::IPv6.
+# Test a list of weird IPs against various round trips through
+# to_bigint, to_array, and to_intarray.
 
+use warnings;
+use strict;
+use utf8;
+use FindBin '$Bin';
 use Test::More;
-
-#use Regexp::IPv6 qw($IPv6_re);
-
-use Net::IPv6Addr 'ipv6_chkip';
-
-# True or false depending on whether this test is supposed to match or not.
-
-my $good;
-
-#my $re = qr/^$IPv6_re$/;
-#my $nare = qr/($IPv6_re)/;
-
+my $builder = Test::More->builder;
+binmode $builder->output,         ":utf8";
+binmode $builder->failure_output, ":utf8";
+binmode $builder->todo_output,    ":utf8";
+binmode STDOUT, ":encoding(utf8)";
+binmode STDERR, ":encoding(utf8)";
+use Net::IPv6Addr ':all';
+use Math::BigInt;
+my ($good, $todogood);
 while (<DATA>) {
     chomp;
     s/\s*#.*//;
@@ -33,33 +35,46 @@ while (<DATA>) {
     if ($good) {
 	if ($todogood) {
 	    TODO: {
-		local $TODO = 'compressed + ipv4';
-		ok (ipv6_chkip ($_), "good $_");
+		local $TODO = 'fails';
+		big_round ($_);
 	    };
 	}
 	else {
-	    ok (ipv6_chkip ($_), "good $_");
+	    big_round ($_);
 	}
     }
     else {
-	ok (! ipv6_chkip ($_), "bad $_");
+	die "I'm bad, I'm bad, you know it, I'm really really bad";
     }
 }
 
+
 done_testing ();
-exit;
 
-# most of the samples below were taken from the validate_ipv6.rb
-# script by Christoph Petschnig (Michael Erickson pointed me there).
+# Round trip big int test
 
-# some samples are from the Wikipedia.
-
-# some samples contributed by Michael G. Schwern
-
+sub big_round
+{
+    my ($ipv6) = @_;
+    my $o = Net::IPv6Addr->new ($ipv6);
+    my $can = $o->to_string_compressed ();
+    my $big = $o->to_bigint ();
+    my @ia = $o->to_intarray ();
+    my @ha = $o->to_array ();
+    my $ipr = from_bigint ($big);
+    my $iar = join (':', map {sprintf ("%04X", $_)} @ia);
+    my $har = join (':', @ha);
+    my $iarr = to_string_compressed ($iar);
+    my $harr = to_string_compressed ($har);
+    my $canr = $ipr->to_string_compressed ();
+    is ($canr, $can, "Round trip of $ipv6 thru to/from_bigint");
+    is ($iarr, $can, "Round trip of $ipv6 thru to_intarray");
+    is ($harr, $can, "Round trip of $ipv6 thru to_array");
+}
 
 __DATA__
 
-GOOD:
+GOOD
 ::127.0.0.1
 ::1
 2001:0db8:85a3:0000:0000:8a2e:0370:7334
@@ -154,11 +169,6 @@ fe80::1
 # https://metacpan.org/pod/release/SALVA/Regexp-IPv6-0.03/lib/Regexp/IPv6.pm#DESCRIPTION
 # https://rt.cpan.org/Public/Bug/Display.html?id=62125
 ::
-
-# These are valid addresses, but the original Tony Monroe
-# Net::IPv6Addr did not recognise them. From version 0.92, these are
-# accepted by the module, so the disqualifier is no longer here.
-
 1:2:3:4:5:6:1.2.3.4
 1:2:3:4:5::1.2.3.4
 1:2:3:4::1.2.3.4
@@ -174,98 +184,3 @@ fe80::217:f2ff:254.7.237.98
 fe80:0:0:0:204:61ff:254.157.241.86
 fe80::204:61ff:254.157.241.86
 
-BAD:
-127.0.0.1
-:
-2001:0000:1234:0000:0000:C1C0:ABCD:0876 0
-2001:0000:1234: 0000:0000:C1C0:ABCD:0876
-02001:0000:1234:0000:0000:C1C0:ABCD:0876 # extra 0 not allowed!
-2001:0000:1234:0000:00001:C1C0:ABCD:0876 # extra 0 not allowed!
-3ffe:0b00:0000:0001:0000:0000:000a
-FF02:0000:0000:0000:0000:0000:0000:0000:0001
-3ffe:b00::1::a
-::1111:2222:3333:4444:5555:6666::
-1:2:3::4:5::7:8
-12345::6:7:8
-1::5:400.2.3.4
-1::5:260.2.3.4
-1::5:256.2.3.4
-1::5:1.256.3.4
-1::5:1.2.256.4
-1::5:1.2.3.256
-1::5:300.2.3.4
-1::5:1.300.3.4
-1::5:1.2.300.4
-1::5:1.2.3.300
-1::5:900.2.3.4
-1::5:1.900.3.4
-1::5:1.2.900.4
-1::5:1.2.3.900
-1::5:300.300.300.300
-1::5:3000.30.30.30
-1::400.2.3.4
-1::260.2.3.4
-1::256.2.3.4
-1::1.256.3.4
-1::1.2.256.4
-1::1.2.3.256
-1::300.2.3.4
-1::1.300.3.4
-1::1.2.300.4
-1::1.2.3.300
-1::900.2.3.4
-1::1.900.3.4
-1::1.2.900.4
-1::1.2.3.900
-1::300.300.300.300
-1::3000.30.30.30
-::400.2.3.4
-::260.2.3.4
-::256.2.3.4
-::1.256.3.4
-::1.2.256.4
-::1.2.3.256
-::300.2.3.4
-::1.300.3.4
-::1.2.300.4
-::1.2.3.300
-::900.2.3.4
-::1.900.3.4
-::1.2.900.4
-::1.2.3.900
-::300.300.300.300
-::3000.30.30.30
-2001:DB8:0:0:8:800:200C:417A:221 # unicast, full
-FF01::101::2 # multicast, compressed
-1111:2222:3333:4444::5555:
-1111:2222:3333::5555:
-1111:2222::5555:
-1111::5555:
-::5555:
-:::
-1111:
-:
-:1111:2222:3333:4444::5555
-:1111:2222:3333::5555
-:1111:2222::5555
-:1111::5555
-:::5555
-:::
-1.2.3.4:1111:2222:3333:4444::5555
-1.2.3.4:1111:2222:3333::5555
-1.2.3.4:1111:2222::5555
-1.2.3.4:1111::5555
-1.2.3.4::5555
-1.2.3.4::
-123
-ldkfj
-2001::FFD3::57ab
-2001:db8:85a3::8a2e:37023:7334
-2001:db8:85a3::8a2e:370k:7334
-1:2:3:4:5:6:7:8:9
-1::2::3
-1:::3:4:5
-1:2:3::4:5:6:7:8:9
-::ffff:2.3.4
-::ffff:257.1.2.3
-1.2.3.4
