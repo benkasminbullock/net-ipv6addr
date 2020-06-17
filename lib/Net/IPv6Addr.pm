@@ -23,7 +23,7 @@ our @EXPORT_OK = qw(
 		       from_bigint
 	       );
 our %EXPORT_TAGS = (all => \@EXPORT_OK);
-our $VERSION = '0.96';
+our $VERSION = '1.0';
 
 use Carp;
 use Net::IPv4Addr;
