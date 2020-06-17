@@ -94,7 +94,7 @@ my %ipv6_patterns = (
 	\&parse_mixed_ipv6v4_compressed,
     ],
     'base85' => [
-	qr/$x$n/,
+	qr/^$x$n$/,
 	\&ipv6_parse_base85,
     ],
 );
@@ -126,11 +126,14 @@ sub getargs
 	($ip, $pfx) = @_;
     }
     elsif (@_ == 1) {
-	($ip, $pfx) = split(m!/!, $_[0])
+	($ip, $pfx) = split(m!/!, $_[0], 2)
     }
     else {
 	mycroak "wrong number of arguments (need 1 or 2)";
     }
+#    if (defined $pfx && $pfx !~ /^[0-9]*$/) {
+#	mycroak "Non-numerical suffix $pfx";
+#    }
     return ($ip, $pfx);
 }
 
