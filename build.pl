@@ -40,6 +40,9 @@ else {
     }
 }
 if ($pan) {
+    if (system ("prove ~/bin/check-changes")) {
+	die "Bad Changes file";
+    }
     if (system ("prove xt/*.t")) {
 	clean ();
 	die "Author tests failed";
