@@ -17,6 +17,7 @@ my $info = get_info (base => "$Bin/..");
 my $pm = "$info->{base}/$info->{pm}";
 my $pod = "$info->{base}/$info->{pod}";
 my @modules = depend ($pm);
+@modules = grep !/Math::Base85/, @modules;
 
 SKIP: {
     if (! @modules) {

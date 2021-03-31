@@ -457,18 +457,9 @@ using
 
 =over
 
-=item L<Net::IPv4Addr>
-
-This is used to parse IPv4 addresses.
-
-=item L<Math::Base85>
-
-This is used to parse L</RFC1924> (April Fool's) addresses.
-
 =item L<Math::BigInt>
 
-This is used by the L</RFC1924> (April Fool's) address routines and by
-L</to_bigint> and L</from_bigint>.
+This is used by L</to_bigint> and L</from_bigint>.
 
 =back
 
@@ -623,6 +614,17 @@ Bowers as part of "CPAN day". Significant changes to the module since
 then include the following:
 
 =over
+
+=item 1.02
+
+L<Net::IPv4Addr> dependence removed. This module suffered from the
+"octal bug". This module had only been used to validate ipv4 addresses
+and was easy to remove.
+
+Math::Base85 dependence removed. This module is only needed to support
+the April Fool's joke method of IPv6 addresses, so if the user doesn't
+already have Math::Base85, the module now disables support for the
+April Fool addresses.
 
 =item 1.0
 

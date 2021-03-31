@@ -58,14 +58,7 @@ my $tt = Template->new (
     STRICT => 1,
 );
 
-my @examples = <$Bin/examples/*.pl>;
-for my $example (@examples) {
-    my $output = $example;
-    $output =~ s/\.pl$/-out.txt/;
-    if (older ($output, $example) || $force) {
-	do_system ("perl -I$Bin/blib/lib -I$Bin/blib/arch $example > $output 2>&1", $verbose);
-    }
-}
+make_examples ("$Bin/examples");
 
 my $ex = Net::IPv6Addr->new ('2001:db8::ff00:42:8329');
 
